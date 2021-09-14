@@ -137,7 +137,6 @@ exports.uploadLaboratoryCSV = async function (req, res) {
   // try {
   for (var j = 1; j < parsedCSV.length; j++) {
     for (var i = 0; i < parsedCSV[0].length; i++) {
-      console.log(parsedCSV[1][i]);
       if (parsedCSV[0][i] === "Due Date") {
         update.due_date = parsedCSV[j][i];
       }
@@ -312,8 +311,6 @@ exports.addCharge = function (req, res) {
     res.status(400).send({ message: "InputLaboratory id can not be empty!" });
     return;
   }
-
-  console.log(req.body);
 
   var token = jwt.decode(req.body.token);
 

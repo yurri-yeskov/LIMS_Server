@@ -10,6 +10,7 @@ var unitsController = require("../controllers/units.js");
 var clientsController = require("../controllers/clients.js");
 var InputLaboratoryController = require("../controllers/inputLaboratory.js");
 var objectiveHistory = require("../controllers/objectiveHistory.js");
+var reasonController = require("../controllers/reasonController");
 
 exports.init = function (app) {
   app.get("/get_all_users", usersController.getAllUsers);
@@ -105,6 +106,11 @@ exports.init = function (app) {
     "/create_objective_history",
     objectiveHistory.createObjectiveHistory
   );
+
+  app.get("/get_all_reason", reasonController.getAllReason);
+  app.post("/create_reason", reasonController.createReason);
+  app.post("/delete_reason", reasonController.deleteReason);
+  app.post("/update_reason", reasonController.updateReason);
 
   app.get("*", (req, res) => {
     res.status(404).send({ message: "Invalid URL" });
