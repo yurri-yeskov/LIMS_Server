@@ -25,6 +25,9 @@ exports.createObjectiveHistory = function (req, res) {
   req.body.data.map((item) => {
     if (item.value === undefined) {
       var value = 0;
+      if (item.reason === undefined) {
+        var reason = "";
+      }
       objectiveHistory = new ObjectiveHistory({
         userid: token.id,
         label: item.label,
@@ -37,7 +40,7 @@ exports.createObjectiveHistory = function (req, res) {
         max: item.max,
         unit: item.unit,
         update_date: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
-        reason: item.reason,
+        reason: reason,
         accept: item.accept,
       });
 
@@ -62,6 +65,7 @@ exports.createObjectiveHistory = function (req, res) {
         limitValue: item.value,
         min: item.min,
         max: item.max,
+        accept: item.accept,
       }).then((history) => {
         var value = 0;
         if (!history) {

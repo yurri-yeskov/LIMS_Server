@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 var InputLaboratory = require("../models/inputLaboratory");
 var Client = require("../models/clients");
+var UserType = require("../models/userTypes");
 var CSV = require("csv-string");
 var moment = require("moment");
 const { parse } = require("csv-string");
@@ -241,6 +242,20 @@ exports.uploadLaboratoryCSV = async function (req, res) {
   // } catch (err) {
   //   res.status(500).send({ message: err.message });
   // }
+};
+
+exports.getUserTypes = function (req, res) {
+  var token = jwt.decode(req.body.token);
+  console.log(token);
+  UserType.findOne({ userType: token.userType }).then((data) => {
+    if (data) {
+      if (data.userType === "General Admin" || data.labAdmin === true) {
+        res.send({ accept_visible: true });
+      } else {
+        res.send({ accept_visible: false });
+      }
+    }
+  });
 };
 
 exports.addWeight = function (req, res) {

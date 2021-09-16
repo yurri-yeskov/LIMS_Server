@@ -100,6 +100,7 @@ exports.init = function (app) {
   );
   app.post("/add_weight", InputLaboratoryController.addWeight);
   app.post("/add_charge", InputLaboratoryController.addCharge);
+  app.post("/get_userTypes", InputLaboratoryController.getUserTypes);
 
   app.get("/get_objective_history", objectiveHistory.getObjectiveHistory);
   app.post(
