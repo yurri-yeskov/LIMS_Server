@@ -13,19 +13,20 @@ var objectiveHistory = require("../controllers/objectiveHistory.js");
 var reasonController = require("../controllers/reasonController");
 var certificateCtr = require("../controllers/certificateCtr");
 var PDFCtr = require("../controllers/getPDFCtr");
-var multer = require('multer');
+var multer = require("multer");
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, __dirname.substr(0, __dirname.length - 13) + "client\\public\\uploads")
+    cb(
+      null,
+      __dirname.substr(0, __dirname.length - 13) + "client\\public\\uploads"
+    );
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname)
-  }
+    cb(null, Date.now() + "-" + file.originalname);
+  },
 });
 var upload = multer({ storage: storage });
-
-
 
 exports.init = function (app) {
   app.get("/get_all_users", usersController.getAllUsers);
@@ -129,15 +130,19 @@ exports.init = function (app) {
   app.post("/update_reason", reasonController.updateReason);
 
   app.get("/get_certificate", certificateCtr.getCertificate);
-  app.post("/add_certificate", upload.array("files"), certificateCtr.AddCertificate);
+  app.post(
+    "/get_certificate_datefotmat",
+    certificateCtr.getCertificate_dateformat
+  );
+  app.post(
+    "/add_certificate",
+    upload.array("files"),
+    certificateCtr.AddCertificate
+  );
   app.post("/del_certificate", certificateCtr.DelCertificate);
   app.post("/update_productdata", certificateCtr.Upproductdata);
   app.post("/update_tabledata", certificateCtr.Uptabledata);
   app.post("/update_Freetext", certificateCtr.UpFreetext);
-
-
-
-
 
   //pdf data collection
   app.post("/pdf_getaddressdata", PDFCtr.getaddress);

@@ -246,7 +246,6 @@ exports.uploadLaboratoryCSV = async function (req, res) {
 
 exports.getUserTypes = function (req, res) {
   var token = jwt.decode(req.body.token);
-  console.log(token);
   UserType.findOne({ userType: token.userType }).then((data) => {
     if (data) {
       if (data.userType === "General Admin" || data.labAdmin === true) {
