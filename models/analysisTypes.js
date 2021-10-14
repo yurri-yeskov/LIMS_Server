@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 let analysisType = new Schema(
   {
+    analysisType_id: { type: String },
     analysisType: { type: String },
     norm: { type: String },
     objectives: { type: Array },

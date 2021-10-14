@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 let packingType = new Schema(
   {
+    packingType_id: { type: String },
     packingType: { type: String },
     remark: { type: String }
   },

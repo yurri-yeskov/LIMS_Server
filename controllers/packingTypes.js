@@ -1,5 +1,6 @@
 
 var PackingType = require('../models/packingTypes');
+var CSV = require('csv-string');
 
 exports.getAllPackingTypes = function(req, res) {
     PackingType.find().then(data => {
@@ -17,6 +18,7 @@ exports.createPackingType = function(req, res) {
     }
 
     var packingType = new PackingType({
+        packingType_id: req.body.packingType_id,
         packingType: req.body.packingType,
         remark: req.body.remark
     });
@@ -40,6 +42,7 @@ exports.updatePackingType = function(req, res) {
     var id = req.body.id;
 
     PackingType.findByIdAndUpdate(id, {
+      packingType_id: req.body.packingType_id,
       packingType: req.body.packingType,
       remark: req.body.remark},
       { useFindAndModify: false }).then(data => {
@@ -76,4 +79,29 @@ exports.deletePackingType = function(req, res) {
     .catch(err => {
       res.status(500).send({ message: "Could not delete object with id = " + id });
     });
+}
+exports.uploadPackingTypeCSV = async function(req, res){
+  if (req.body === undefined) {
+    res.status(400).send({ message: "PackingType name can not be empty!" });
+    return;
+  }
+  const parsedCSV = CSV.parse(req.body.data);
+  try{
+    for (var i = 1; i < parsedCSV.length; i ++) {
+      var aCSV = parsedCSV[i];
+        let query = { packingType_id: aCSV[0] };
+        let update = {
+          packingType:aCSV[1],
+          remark:aCSV[2],
+        };
+        let options = {upsert: true, new: true, setDefaultsOnInsert: true, useFindAndModify: false};
+        await PackingType.findOneAndUpdate(query, update, options)
+    }
+    PackingType.find().then(data => {
+      res.send(data);
+    })
+  }
+  catch (err){
+    res.status(500).send({ message: err.message });
+  }
 }

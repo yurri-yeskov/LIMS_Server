@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 let material = new Schema(
   {
+    material_id: { type: String },
     material: { type: String },
     objectiveValues: { type: Array },    
     clients: { type: Array },

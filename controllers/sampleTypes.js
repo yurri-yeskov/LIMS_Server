@@ -1,5 +1,6 @@
 
 var SampleType = require('../models/sampleTypes');
+var CSV = require('csv-string');
 
 exports.getAllSampleTypes = function(req, res) {
     SampleType.find().then(data => {
@@ -18,6 +19,7 @@ exports.createSampleType = function(req, res) {
 
     var sampleType = new SampleType({
         sampleType: req.body.sampleType,
+        sampleType_id: req.body.sampleType_id,
         material: req.body.material,
         client: req.body.client,
         packingType: req.body.packingType,
@@ -51,6 +53,7 @@ exports.updateSampleType = function(req, res) {
 
     SampleType.findByIdAndUpdate(id, {
       sampleType: req.body.sampleType,
+      sampleType_id:req.body.sampleType_id,
       material: req.body.material,
       client: req.body.client,
       packingType: req.body.packingType,
@@ -96,4 +99,85 @@ exports.deleteSampleType = function(req, res) {
     .catch(err => {
       res.status(500).send({ message: "Could not delete object with id = " + id });
     });
+}
+exports.uploadSampleTypeCSV = async function(req, res){
+  const parsedCSV = CSV.parse(req.body.data);
+  try{
+    for (var i = 1; i < parsedCSV.length; i ++) {
+      var aCSV = parsedCSV[i];
+      let query = { sampleType_id: aCSV[0] };
+      if(aCSV[2] === ''){
+        aCSV[2] = false;
+      }else if(aCSV[2] === 'TRUE'){
+        aCSV[2] = true;
+      }
+      if(aCSV[3] === ''){
+        aCSV[3] = false;
+      }else if(aCSV[3] === 'TRUE'){
+        aCSV[3] = true;
+      }
+      if(aCSV[4] === ''){
+        aCSV[4] = false;
+      }else if(aCSV[4] === 'TRUE'){
+        aCSV[4] = true;
+      }
+      if(aCSV[5] === ''){
+        aCSV[5] = false;
+      }else if(aCSV[5] === 'TRUE'){
+        aCSV[5] = true;
+      }
+      if(aCSV[6] === ''){
+        aCSV[6] = false;
+      }else if(aCSV[6] === 'TRUE'){
+        aCSV[6] = true;
+      }
+      if(aCSV[7] === ''){
+        aCSV[7] = false;
+      }else if(aCSV[7] === 'TRUE'){
+        aCSV[7] = true;
+      }
+      if(aCSV[8] === ''){
+        aCSV[8] = false;
+      }else if(aCSV[8] === 'TRUE'){
+        aCSV[8] = true;
+      }
+      if(aCSV[9] === ''){
+        aCSV[9] = false;
+      }else if(aCSV[9] === 'TRUE'){
+        aCSV[9] = true;
+      }
+      if(aCSV[10] === ''){
+        aCSV[10] = false;
+      }else if(aCSV[10] === 'TRUE'){
+        aCSV[10] = true;
+      }
+      if(aCSV[11] === ''){
+        aCSV[11] = false;
+      }else if(aCSV[11] === 'TRUE'){
+        aCSV[11] = true;
+      }
+      let update = {
+        sampleType:aCSV[1],
+        material:aCSV[2],
+        client:aCSV[3],
+        packingType:aCSV[4],
+        dueDate:aCSV[5],
+        sampleDate:aCSV[6],
+        sendingDate:aCSV[7],
+        analysisType:aCSV[8],
+        incomingProduct:aCSV[9],
+        distributor:aCSV[10],
+        certificateType:aCSV[11],
+        remark:aCSV[12]
+      };
+      let options = {upsert: true, new: true, setDefaultsOnInsert: true, useFindAndModify: false};
+      await SampleType.findOneAndUpdate(query, update, options)
+    }
+    SampleType.find().then(data => {
+      res.send(data);
+    });
+  }
+  catch (err){
+    res.status(500).send({ message: err.message });
+  }
 }

@@ -1,6 +1,7 @@
 
 var Objective = require('../models/objectives');
 var Unit = require('../models/units');
+var CSV = require('csv-string');
 
 exports.getAllObjectives = async function(req, res) {
   try {
@@ -20,6 +21,7 @@ exports.createObjective = async function(req, res) {
     }
 
     var objective = new Objective({
+      objective_id: req.body.objective_id,
       objective: req.body.objective,
       units: req.body.units,
       remark: req.body.remark
@@ -58,6 +60,7 @@ exports.updateObjective = async function(req, res) {
       else {
         const data = await Objective.findByIdAndUpdate(id, {
           objective: req.body.objective,
+          objective_id: req.body.objective_id,
           units: req.body.units,
           remark: req.body.remark},
           { useFindAndModify: false }); 
@@ -96,4 +99,39 @@ exports.deleteObjective = async function(req, res) {
     } catch (err) {
       res.status(500).send({ message: err.message });
     }
+}
+
+exports.uploadObjectiveCSV = async function(req, res){
+  const parsedCSV = CSV.parse(req.body.data);
+  try{
+    for (var i = 1; i < parsedCSV.length; i ++) {
+      var aCSV = parsedCSV[i];
+      var unit_data = [];
+      if(aCSV[2] != ''){
+        var units = [];
+        if(aCSV[2].indexOf('\n') === -1){
+          units.push(aCSV[2])
+        }else{
+          units = aCSV[2].split('\n');
+        }
+        for(var j=0; j< units.length; j++){
+          var temp = await Unit.findOne({unit:units[j]})
+          unit_data.push(temp._id);
+        }
+      }
+        let query = { objective_id: aCSV[0] };
+        let update = {
+          objective:aCSV[1],
+          units:unit_data,
+          remark:aCSV[3]
+        };
+        let options = {upsert: true, new: true, setDefaultsOnInsert: true, useFindAndModify: false};
+        await Objective.findOneAndUpdate(query, update, options)
+    }
+    const objectives = await Objective.find();
+    res.send({objectives});
+  }
+  catch (err){
+    res.status(500).send({ message: err.message });
+  }
 }

@@ -12,7 +12,6 @@ exports.init = function() {
     })
     .then(() => {
       logger.info("MongoDB database connection established successfully");
-      
     })
     .catch(err => {
       logger.error("MongoDB database connection established unsuccessfully", err);

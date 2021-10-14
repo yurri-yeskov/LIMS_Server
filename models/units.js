@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 let unit = new Schema(
   {
+    unit_id: { type: String },
     unit: { type: String },
     remark: { type: String }
   },

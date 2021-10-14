@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 let userType = new Schema(
   {
+    userType_id: { type: String },
     userType: { type: String },
     labInput: { type: Boolean },
     labAnalysis: { type: Boolean },

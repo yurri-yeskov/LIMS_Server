@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 let sampleType = new Schema(
   {
+    sampleType_id: { type: String },
     sampleType: { type: String },
     material: { type: Boolean },
     client: { type: Boolean },

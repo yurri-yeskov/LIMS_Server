@@ -1,6 +1,7 @@
 var User = require("../models/users");
 var UserType = require("../models/userTypes");
 var jwt = require("jsonwebtoken");
+var CSV = require('csv-string');
 
 exports.getToken = async function (req, res) {
   const token = req.body.token;
@@ -145,7 +146,39 @@ exports.deleteUser = async function (req, res) {
 
       res.send({ users, userTypes });
     }
-  } catch (err) {
+  }
+  catch (err) {
     res.status(500).send({ message: err.message });
   }
 };
+exports.uploadUserCSV = async function(req, res) {
+  if (req.body === undefined) {
+    res.status(400).send({ message: "User CSV can not be empty!" });
+    return;
+  }
+  const parsedCSV = CSV.parse(req.body.data);
+  try{
+    for (var i = 1; i < parsedCSV.length; i ++) {
+      var aCSV = parsedCSV[i];
+      const userTypes = await UserType.findOne({userType:aCSV[4]});
+      // console.log(userTypes);
+      if(userTypes._id != undefined){
+        let query = { user_id: aCSV[0] };
+        let update = {
+          userName:aCSV[1],
+          email:aCSV[2],
+          password:aCSV[3],
+          userType:userTypes._id,
+          remark:aCSV[5]
+        };
+        let options = {upsert: true, new: true, setDefaultsOnInsert: true, useFindAndModify: false};
+        await User.findOneAndUpdate(query, update, options)
+      }
+    }
+    const users = await User.find();
+    res.send({users});
+  }
+  catch (err){
+    res.status(500).send({ message: err.message });
+  }
+}
