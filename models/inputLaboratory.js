@@ -17,6 +17,8 @@ let inputLaboratory = new Schema(
     geo_locaion: { type: String },
     remark: { type: String },
     client_id: { type: String },
+    material_left: { type: String },
+    stockSample: { type: String },
     Weight: [
       {
         weight: { type: String },

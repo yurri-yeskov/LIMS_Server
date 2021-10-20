@@ -16,11 +16,14 @@ var certificateCtr = require("../controllers/certificateCtr");
 var PDFCtr = require("../controllers/getPDFCtr");
 var multer = require("multer");
 
+console.log(__dirname);
+
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(
       null,
-      __dirname.substr(0, __dirname.length - 12) + "\\LIMS\\public\\uploads"
+      // __dirname.substr(0, __dirname.length - 12) + "\\LIMS\\public\\uploads"
+      __dirname.substr(0, __dirname.length - 14) + "\\client\\public\\uploads"
     );
     console.log(__dirname);
   },
@@ -31,11 +34,10 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 exports.init = function (app) {
-
   app.post("/get_language", AnalysisLaboratoryController.getLanguage);
 
   app.get("/get_all_users", usersController.getAllUsers);
-  app.post("/upload_user_csv",usersController.uploadUserCSV);
+  app.post("/upload_user_csv", usersController.uploadUserCSV);
   app.post("/get_token", usersController.getToken);
   app.post("/login_user", usersController.loginUser);
   app.post("/create_user", usersController.createUser);
@@ -52,7 +54,10 @@ exports.init = function (app) {
   app.post("/create_packingType", packingTypesController.createPackingType);
   app.post("/delete_packingType", packingTypesController.deletePackingType);
   app.post("/update_packingType", packingTypesController.updatePackingType);
-  app.post("/upload_packingType_csv", packingTypesController.uploadPackingTypeCSV);
+  app.post(
+    "/upload_packingType_csv",
+    packingTypesController.uploadPackingTypeCSV
+  );
 
   app.get(
     "/get_all_certificateTypes",
@@ -82,19 +87,22 @@ exports.init = function (app) {
   app.post("/create_analysisType", analysisTypesController.createAnalysisType);
   app.post("/delete_analysisType", analysisTypesController.deleteAnalysisType);
   app.post("/update_analysisType", analysisTypesController.updateAnalysisType);
-  app.post("/upload_analysisType_csv", analysisTypesController.uploadAnalysisTypeCSV);
+  app.post(
+    "/upload_analysisType_csv",
+    analysisTypesController.uploadAnalysisTypeCSV
+  );
 
   app.get("/get_all_sampleTypes", sampleTypesController.getAllSampleTypes);
   app.post("/create_sampleType", sampleTypesController.createSampleType);
   app.post("/delete_sampleType", sampleTypesController.deleteSampleType);
   app.post("/update_sampleType", sampleTypesController.updateSampleType);
-  app.post("/upload_sampletype_csv",sampleTypesController.uploadSampleTypeCSV);
+  app.post("/upload_sampletype_csv", sampleTypesController.uploadSampleTypeCSV);
 
   app.get("/get_all_userTypes", userTypesController.getAllUserTypes);
   app.post("/create_userType", userTypesController.createUserType);
   app.post("/delete_userType", userTypesController.deleteUserType);
   app.post("/update_userType", userTypesController.updateUserType);
-  app.post("/upload_usertype_csv",userTypesController.uploadUserTypeCSV);
+  app.post("/upload_usertype_csv", userTypesController.uploadUserTypeCSV);
 
   app.get("/get_all_materials", materialsController.getAllMaterials);
   app.post("/create_material", materialsController.createMaterial);
@@ -134,6 +142,7 @@ exports.init = function (app) {
   app.post("/add_weight", InputLaboratoryController.addWeight);
   app.post("/add_charge", InputLaboratoryController.addCharge);
   app.post("/get_userTypes", InputLaboratoryController.getUserTypes);
+  app.post("/add_mat", InputLaboratoryController.add_material);
 
   app.get("/get_objective_history", objectiveHistory.getObjectiveHistory);
   app.post(
@@ -148,9 +157,18 @@ exports.init = function (app) {
   app.post("/upload_reason_csv", reasonController.uploadReasonCSV);
 
   app.post("/get_graph_data", AnalysisLaboratoryController.getGraphData);
-  app.post("/get_objective_history_for_chart", AnalysisLaboratoryController.getObjectiveHistoryData);
-  app.post("/get_available_analysis_type", AnalysisLaboratoryController.getAvailableanalysisType);
-  app.post("/get_input_laboratory_by_id", AnalysisLaboratoryController.getinputlaboratorybyid);
+  app.post(
+    "/get_objective_history_for_chart",
+    AnalysisLaboratoryController.getObjectiveHistoryData
+  );
+  app.post(
+    "/get_available_analysis_type",
+    AnalysisLaboratoryController.getAvailableanalysisType
+  );
+  app.post(
+    "/get_input_laboratory_by_id",
+    AnalysisLaboratoryController.getinputlaboratorybyid
+  );
   app.get("/get_certificate", certificateCtr.getCertificate);
   app.post(
     "/get_certificate_datefotmat",

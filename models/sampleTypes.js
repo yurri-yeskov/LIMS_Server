@@ -6,6 +6,7 @@ let sampleType = new Schema(
   {
     sampleType_id: { type: String },
     sampleType: { type: String },
+    stockSample: { type: Boolean },
     material: { type: Boolean },
     client: { type: Boolean },
     packingType: { type: Boolean },
@@ -16,7 +17,7 @@ let sampleType = new Schema(
     incomingProduct: { type: Boolean },
     distributor: { type: Boolean },
     certificateType: { type: Boolean },
-    remark: { type: String }
+    remark: { type: String },
   },
   { collection: "sampleTypes" }
 );

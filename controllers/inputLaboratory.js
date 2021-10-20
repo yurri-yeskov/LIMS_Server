@@ -279,6 +279,9 @@ exports.addWeight = function (req, res) {
       $push: {
         Weight: WeightHistory,
       },
+      $set: {
+        material_left: req.body.material_left,
+      },
     })
       .then((data) => {
         InputLaboratory.find()
@@ -305,6 +308,9 @@ exports.addWeight = function (req, res) {
         InputLaboratory.findByIdAndUpdate(req.body.data.parent_id, {
           $push: {
             Weight: WeightHistory,
+          },
+          $set: {
+            material_left: req.body.material_left,
           },
         })
           .then((data) => {
@@ -381,4 +387,28 @@ exports.addCharge = function (req, res) {
       }
     });
   }
+};
+
+exports.add_material = (req, res) => {
+  console.log(req.body);
+  InputLaboratory.findById(req.body._id)
+    .then((material) => {
+      if (material) {
+        InputLaboratory.findByIdAndUpdate(req.body._id, {
+          $set: {
+            material_left: req.body.mat_left,
+            stockSample: req.body.stock_sample,
+          },
+        })
+          .then((data) => {
+            InputLaboratory.find()
+              .populate("Charge.user", ["_id", "userName"])
+              .then((laboratory) => {
+                res.send(laboratory);
+              });
+          })
+          .catch((err) => res.status(500).send({ message: err.message }));
+      }
+    })
+    .catch((err) => console.log(err));
 };

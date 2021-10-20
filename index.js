@@ -19,8 +19,6 @@ app.use(cors());
 app.use(bodyParser.json());
 
 
-
-
 var server = require('http').createServer(app);
 var port = config.Port;
 
