@@ -22,7 +22,6 @@ var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(
       null,
-      // __dirname.substr(0, __dirname.length - 12) + "\\LIMS\\public\\uploads"
       __dirname.substr(0, __dirname.length - 14) + "\\client\\public\\uploads"
     );
     console.log(__dirname);
@@ -43,6 +42,7 @@ exports.init = function (app) {
   app.post("/create_user", usersController.createUser);
   app.post("/delete_user", usersController.deleteUser);
   app.post("/update_user", usersController.updateUser);
+  app.post("/remove_mat", InputLaboratoryController.Del_material);
 
   app.get("/get_all_objectives", objectivesController.getAllObjectives);
   app.post("/create_objective", objectivesController.createObjective);
@@ -54,6 +54,7 @@ exports.init = function (app) {
   app.post("/create_packingType", packingTypesController.createPackingType);
   app.post("/delete_packingType", packingTypesController.deletePackingType);
   app.post("/update_packingType", packingTypesController.updatePackingType);
+
   app.post(
     "/upload_packingType_csv",
     packingTypesController.uploadPackingTypeCSV
@@ -143,6 +144,8 @@ exports.init = function (app) {
   app.post("/add_charge", InputLaboratoryController.addCharge);
   app.post("/get_userTypes", InputLaboratoryController.getUserTypes);
   app.post("/add_mat", InputLaboratoryController.add_material);
+  app.post("/del_mat", InputLaboratoryController.del_material);
+  app.post("/sample_mat", InputLaboratoryController.sample_material);
 
   app.get("/get_objective_history", objectiveHistory.getObjectiveHistory);
   app.post(

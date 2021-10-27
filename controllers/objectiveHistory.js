@@ -11,7 +11,6 @@ exports.getObjectiveHistory = async function (req, res) {
       "_id",
       "userName",
     ]);
-
     res.send({ unit, objectivehistory });
   } catch (err) {
     res.status(500).send({ message: err.message });

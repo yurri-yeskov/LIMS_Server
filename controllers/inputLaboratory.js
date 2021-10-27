@@ -390,25 +390,176 @@ exports.addCharge = function (req, res) {
 };
 
 exports.add_material = (req, res) => {
-  console.log(req.body);
   InputLaboratory.findById(req.body._id)
-    .then((material) => {
-      if (material) {
-        InputLaboratory.findByIdAndUpdate(req.body._id, {
-          $set: {
-            material_left: req.body.mat_left,
-            stockSample: req.body.stock_sample,
-          },
+    .then((data) => {
+      data.material_left = data.material_left - req.body.mat_left;
+      data
+        .save()
+        .then((e) => {
+          InputLaboratory.find()
+            .populate("Charge.user", ["_id", "userName"])
+            .then((laboratory) => {
+              res.send(laboratory);
+            });
         })
-          .then((data) => {
-            InputLaboratory.find()
-              .populate("Charge.user", ["_id", "userName"])
-              .then((laboratory) => {
-                res.send(laboratory);
+        .catch((err) => console.log(err));
+    })
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+exports.del_material = (req, res) => {
+  InputLaboratory.findById(req.body._id)
+    .then((data) => {
+      data.material_left =
+        Number(data.material_left) + Number(req.body.mat_left);
+      data
+        .save()
+        .then((e) => {
+          InputLaboratory.find()
+            .populate("Charge.user", ["_id", "userName"])
+            .then((laboratory) => {
+              res.send(laboratory);
+            });
+        })
+        .catch((err) => console.log(err));
+    })
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+exports.sample_material = (req, res) => {
+  var stockid = req.body.stockid.toString();
+  var userid = "";
+  var label = "";
+  var limitValue = "";
+  var id = "";
+  var analysis = "";
+  var obj_value = "";
+  var min = "";
+  var max = "";
+  var unit = "";
+  var update_date = "";
+  var comment = "";
+  var reason = "";
+  var accept = "";
+  ObjectiveHistory.find({ id: req.body.stockid })
+    .sort({ update_date: 1 })
+    .then((doc) => {
+      label = doc[doc.length - 1].label;
+      userid = doc[doc.length - 1].userid;
+      limitValue = doc[doc.length - 1].limitValue;
+      id = req.body.selfid.toString();
+      analysis = doc[doc.length - 1].analysis;
+      obj_value = doc[doc.length - 1].obj_value;
+      min = doc[doc.length - 1].min;
+      max = doc[doc.length - 1].max;
+      unit = doc[doc.length - 1].unit;
+      update_date = doc[doc.length - 1].update_date;
+      comment = doc[doc.length - 1].comment;
+      reason = doc[doc.length - 1].reason;
+      accept = doc[doc.length - 1].accept;
+
+      new ObjectiveHistory({
+        userid: userid,
+        label: label,
+        limitValue: limitValue,
+        id: id,
+        analysis: analysis,
+        obj_value: obj_value,
+        min: min,
+        max: max,
+        unit: unit,
+        update_date: update_date,
+        comment: comment,
+        reason: reason,
+        accept: accept,
+      })
+        .save()
+        .then();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  InputLaboratory.findById(req.body.selfid)
+    .then((data) => {
+      if (
+        data.idstore.filter((e) => e == req.body.stockid.toString()).length == 0
+      ) {
+        data.idstore.push(req.body.stockid.toString());
+        data.a_types.push(req.body.analysisType);
+        data.c_types.push(req.body.certificate);
+        var arr = {
+          id: stockid,
+          val:
+            data.sample_type +
+            " " +
+            req.body.sampleinfo +
+            " " +
+            req.body.mat_left,
+        };
+        if (data.stockSample.filter((v) => v.id == stockid).length == 0) {
+          data.stockSample.push(arr);
+          data
+            .save()
+            .then((e) => {
+              InputLaboratory.find()
+                .populate("Charge.user", ["_id", "userName"])
+                .then((laboratory) => {
+                  res.send(laboratory);
+                });
+            })
+            .catch((err) => console.log(err));
+        } else {
+          data.stockSample.map((v, i) => {
+            if (v.id == stockid) {
+              let makearr = v.val.split(" ");
+              var stockarr =
+                Number(makearr[makearr.length - 1]) + Number(req.body.mat_left);
+              makearr[makearr.length - 1] = stockarr;
+              var changed = "";
+              makearr.map((v1) => {
+                changed = changed + v1 + " ";
               });
-          })
-          .catch((err) => res.status(500).send({ message: err.message }));
+              v.val = changed.trim();
+            }
+          });
+          var ChVal = data.stockSample;
+          InputLaboratory.findById(req.body.selfid).then((e1) => {
+            e1.stockSample = ChVal;
+            e1.save().then((er) => console.log(er));
+          });
+        }
+      } else {
+        InputLaboratory.find()
+          .populate("Charge.user", ["_id", "userName"])
+          .then((laboratory) => {
+            res.send(laboratory);
+          });
       }
     })
-    .catch((err) => console.log(err));
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+exports.Del_material = (req, res) => {
+  var stockid = req.body.stockid.toString();
+  InputLaboratory.findById(req.body.selfid)
+    .then((data) => {
+      data.stockSample.map((v, i) => {
+        if (v.id == stockid) {
+          let makearr = v.val.split(" ");
+          var stockarr =
+            Number(makearr[makearr.length - 1]) - Number(req.body.mat_left);
+          makearr[makearr.length - 1] = stockarr;
+          var changed = "";
+          makearr.map((v1) => {
+            changed = changed + v1 + " ";
+          });
+          v.val = changed.trim();
+        }
+      });
+      var ChVal = data.stockSample;
+      InputLaboratory.findById(req.body.selfid).then((e1) => {
+        e1.stockSample = ChVal;
+        e1.save().then((er) => console.log(er));
+      });
+    })
+    .catch((err) => res.status(500).send({ message: err.message }));
 };
