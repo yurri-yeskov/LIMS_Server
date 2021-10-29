@@ -392,7 +392,7 @@ exports.addCharge = function (req, res) {
 exports.add_material = (req, res) => {
   InputLaboratory.findById(req.body._id)
     .then((data) => {
-      data.material_left = data.material_left - req.body.mat_left;
+      data.material_left = data.material_left - req.body.totalValue;
       data
         .save()
         .then((e) => {
@@ -405,6 +405,26 @@ exports.add_material = (req, res) => {
         .catch((err) => console.log(err));
     })
     .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+exports.add_multi_material = (req, res) => {
+  req.body.sendarrval.map((v) => {
+    InputLaboratory.findById(v.id)
+      .then((data) => {
+        data.material_left = data.material_left - v.val;
+        data
+          .save()
+          .then((e) => {
+            InputLaboratory.find()
+              .populate("Charge.user", ["_id", "userName"])
+              .then((laboratory) => {
+                res.send(laboratory);
+              });
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => res.status(500).send({ message: err.message }));
+  });
 };
 
 exports.del_material = (req, res) => {
@@ -481,12 +501,26 @@ exports.sample_material = (req, res) => {
     });
   InputLaboratory.findById(req.body.selfid)
     .then((data) => {
+      var weightarr = {
+        weight: req.body.tSum,
+        update_date: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+        user: req.body.lotuser,
+      };
+      data.Weight.push(weightarr);
+      var lotarr = {
+        charge: req.body.lotcharge,
+        update_date: req.body.lotupdatedate,
+        user: req.body.lotuser,
+      };
+      // console.log(lotarr);
+
       if (
         data.idstore.filter((e) => e == req.body.stockid.toString()).length == 0
       ) {
         data.idstore.push(req.body.stockid.toString());
         data.a_types.push(req.body.analysisType);
         data.c_types.push(req.body.certificate);
+        data.Charge.push(lotarr);
         var arr = {
           id: stockid,
           val:
