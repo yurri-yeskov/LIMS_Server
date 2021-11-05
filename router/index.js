@@ -144,8 +144,11 @@ exports.init = function (app) {
   app.post("/add_charge", InputLaboratoryController.addCharge);
   app.post("/get_userTypes", InputLaboratoryController.getUserTypes);
   app.post("/add_mat", InputLaboratoryController.add_material);
+  app.post("/add_multi_mat", InputLaboratoryController.add_multi_material);
   app.post("/del_mat", InputLaboratoryController.del_material);
   app.post("/sample_mat", InputLaboratoryController.sample_material);
+  app.post("/weight_mat", InputLaboratoryController.weight_material);
+  app.post("/lot_mat", InputLaboratoryController.lot_material);
 
   app.get("/get_objective_history", objectiveHistory.getObjectiveHistory);
   app.post(

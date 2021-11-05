@@ -392,7 +392,7 @@ exports.addCharge = function (req, res) {
 exports.add_material = (req, res) => {
   InputLaboratory.findById(req.body._id)
     .then((data) => {
-      data.material_left = data.material_left - req.body.mat_left;
+      data.material_left = data.material_left - req.body.totalValue;
       data
         .save()
         .then((e) => {
@@ -402,6 +402,33 @@ exports.add_material = (req, res) => {
               res.send(laboratory);
             });
         })
+        .catch((err) => console.log(err));
+    })
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+exports.add_multi_material = (req, res) => {
+  req.body.sendarrval.map((v) => {
+    InputLaboratory.findById(v.id)
+      .then((data1) => {
+        data1.material_left = data1.material_left - v.val;
+        data1
+          .save()
+          .then()
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => res.status(500).send({ message: err.message }));
+  });
+  InputLaboratory.findById(req.body.selfid)
+    .then((data2) => {
+      req.body.idstore.map((e) => {
+        if (data2.idstore.filter((ee) => e == ee).length == 0) {
+          data2.idstore.push(e);
+        }
+      });
+      data2
+        .save()
+        .then()
         .catch((err) => console.log(err));
     })
     .catch((err) => res.status(500).send({ message: err.message }));
@@ -418,7 +445,7 @@ exports.del_material = (req, res) => {
           InputLaboratory.find()
             .populate("Charge.user", ["_id", "userName"])
             .then((laboratory) => {
-              res.send(laboratory);
+              return res.send(laboratory);
             });
         })
         .catch((err) => console.log(err));
@@ -427,7 +454,6 @@ exports.del_material = (req, res) => {
 };
 
 exports.sample_material = (req, res) => {
-  var stockid = req.body.stockid.toString();
   var userid = "";
   var label = "";
   var limitValue = "";
@@ -441,103 +467,160 @@ exports.sample_material = (req, res) => {
   var comment = "";
   var reason = "";
   var accept = "";
-  ObjectiveHistory.find({ id: req.body.stockid })
-    .sort({ update_date: 1 })
-    .then((doc) => {
-      label = doc[doc.length - 1].label;
-      userid = doc[doc.length - 1].userid;
-      limitValue = doc[doc.length - 1].limitValue;
-      id = req.body.selfid.toString();
-      analysis = doc[doc.length - 1].analysis;
-      obj_value = doc[doc.length - 1].obj_value;
-      min = doc[doc.length - 1].min;
-      max = doc[doc.length - 1].max;
-      unit = doc[doc.length - 1].unit;
-      update_date = doc[doc.length - 1].update_date;
-      comment = doc[doc.length - 1].comment;
-      reason = doc[doc.length - 1].reason;
-      accept = doc[doc.length - 1].accept;
 
-      new ObjectiveHistory({
-        userid: userid,
-        label: label,
-        limitValue: limitValue,
-        id: id,
-        analysis: analysis,
-        obj_value: obj_value,
-        min: min,
-        max: max,
-        unit: unit,
-        update_date: update_date,
-        comment: comment,
-        reason: reason,
-        accept: accept,
-      })
-        .save()
-        .then();
-    })
-    .catch((err) => {
-      console.log(err);
+  var clientid = "";
+  req.body.arrid.map((a) => {
+    InputLaboratory.find({ _id: a }).then((doc1) => {
+      clientid = doc1[doc1.length - 1].client_id;
+      clientName = doc1[doc1.length - 1].client;
+      InputLaboratory.findByIdAndUpdate(req.body.selfid, {
+        $set: { client_id: clientid, client: clientName },
+      }).then();
     });
-  InputLaboratory.findById(req.body.selfid)
-    .then((data) => {
-      if (
-        data.idstore.filter((e) => e == req.body.stockid.toString()).length == 0
-      ) {
-        data.idstore.push(req.body.stockid.toString());
-        data.a_types.push(req.body.analysisType);
-        data.c_types.push(req.body.certificate);
-        var arr = {
-          id: stockid,
-          val:
-            data.sample_type +
-            " " +
-            req.body.sampleinfo +
-            " " +
-            req.body.mat_left,
-        };
-        if (data.stockSample.filter((v) => v.id == stockid).length == 0) {
-          data.stockSample.push(arr);
-          data
-            .save()
-            .then((e) => {
-              InputLaboratory.find()
-                .populate("Charge.user", ["_id", "userName"])
-                .then((laboratory) => {
-                  res.send(laboratory);
-                });
-            })
-            .catch((err) => console.log(err));
-        } else {
-          data.stockSample.map((v, i) => {
-            if (v.id == stockid) {
-              let makearr = v.val.split(" ");
-              var stockarr =
-                Number(makearr[makearr.length - 1]) + Number(req.body.mat_left);
-              makearr[makearr.length - 1] = stockarr;
-              var changed = "";
-              makearr.map((v1) => {
-                changed = changed + v1 + " ";
-              });
-              v.val = changed.trim();
-            }
-          });
-          var ChVal = data.stockSample;
-          InputLaboratory.findById(req.body.selfid).then((e1) => {
-            e1.stockSample = ChVal;
-            e1.save().then((er) => console.log(er));
-          });
+
+    ObjectiveHistory.find({ id: a })
+      .then((doc) => {
+        label = doc[doc.length - 1].label;
+        userid = doc[doc.length - 1].userid;
+        limitValue = doc[doc.length - 1].limitValue;
+        id = req.body.onlyselfid;
+        analysis = doc[doc.length - 1].analysis;
+        obj_value = doc[doc.length - 1].obj_value;
+        min = doc[doc.length - 1].min;
+        max = doc[doc.length - 1].max;
+        unit = doc[doc.length - 1].unit;
+        update_date = doc[doc.length - 1].update_date;
+        comment = doc[doc.length - 1].comment;
+        reason = doc[doc.length - 1].reason;
+        accept = doc[doc.length - 1].accept;
+
+        new ObjectiveHistory({
+          userid: userid,
+          label: label,
+          limitValue: limitValue,
+          id: id,
+          analysis: analysis,
+          obj_value: obj_value,
+          min: min,
+          max: max,
+          unit: unit,
+          update_date: update_date,
+          comment: comment,
+          reason: reason,
+          accept: accept,
+        })
+          .save()
+          .then()
+          .catch((err) => res.status(500).send({ message: err.message }));
+      })
+      .catch((err) => res.status(500).send({ message: err.message }));
+  });
+
+  req.body.sampleinfo.map((e) => {
+    InputLaboratory.findById(req.body.selfid)
+      .then((e3) => {
+        if (e3.stockSample != e) {
+          if (e3.stockSample.filter((v) => v == e).length == 0) {
+            e3.stockSample.push(e);
+          }
         }
+        e3.save()
+          .then()
+          .catch((err) => res.status(500).send({ message: err.message }));
+      })
+      .catch((err) => res.status(500).send({ message: err.message }));
+  });
+
+  req.body.analysisType.map((e) => {
+    InputLaboratory.findById(req.body.selfid)
+      .then((e4) => {
+        if (e4.a_types.filter((v) => v == e).length == 0) {
+          e4.a_types.push(e);
+        }
+        e4.save()
+          .then()
+          .catch((err) => res.status(500).send({ message: err.message }));
+      })
+      .catch((err) => res.status(500).send({ message: err.message }));
+  });
+
+  req.body.certificate.map((e) => {
+    InputLaboratory.findById(req.body.selfid)
+      .then((e5) => {
+        if (e5.c_types != e) {
+          if (e5.c_types.filter((v) => v == e).length == 0) {
+            e5.c_types.push(e);
+          }
+        }
+        e5.save()
+          .then()
+          .catch((err) => res.status(500).send({ message: err.message }));
+      })
+      .catch((err) => res.status(500).send({ message: err.message }));
+  });
+};
+
+exports.weight_material = (req, res) => {
+  InputLaboratory.findById(req.body.selfid)
+    .then((e2) => {
+      if (e2.Weight.length == 0) {
+        var allVal = req.body.tSum;
       } else {
-        InputLaboratory.find()
-          .populate("Charge.user", ["_id", "userName"])
-          .then((laboratory) => {
-            res.send(laboratory);
-          });
+        var allVal =
+          Number(req.body.tSum) +
+          Number(e2.Weight[e2.Weight.length - 1].weight);
       }
+
+      var weightarr = {
+        weight: allVal,
+        update_date: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+      };
+      e2.Weight.push(weightarr);
+      e2.save()
+        .then((er) => {
+          InputLaboratory.find()
+            .populate("Charge.user", ["_id", "userName"])
+            .then((laboratory) => {
+              res.send(laboratory);
+            });
+        })
+        .catch((err) => res.status(500).send({ message: err.message }));
     })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
+
+exports.lot_material = (req, res) => {
+  req.body.lotcharge.map((e) => {
+    InputLaboratory.findById(req.body.selfid)
+      .then((e4) => {
+        var lotarr = {
+          charge: e,
+          update_date: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+        };
+
+        if (e4.Charge.length == 0) {
+          e4.Charge.push(lotarr);
+        } else {
+          if (e4.Charge.filter((c) => c.charge == e).length == 0) {
+            e4.Charge.push(lotarr);
+          }
+        }
+
+        e4.save()
+          .then()
+          // .then((er) => {
+          //   InputLaboratory.find()
+          //     .populate("Charge.user", ["_id", "userName"])
+          //     .then((laboratory) => {
+          //       res.send(laboratory);
+          //     });
+          // })
+          .catch((err) => res.status(500).send({ message: err.message }));
+      })
+      .catch((err) => res.status(500).send({ message: err.message }));
+  });
+};
+
 exports.Del_material = (req, res) => {
   var stockid = req.body.stockid.toString();
   InputLaboratory.findById(req.body.selfid)
