@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 let inputLaboratory = new Schema(
   {
+    stockinfo: { type: String },
     sample_type: { type: String },
     material: { type: String },
     client: { type: String },

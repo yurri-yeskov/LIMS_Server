@@ -24,14 +24,6 @@ server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
 
-// const userTypeFind = async() => {
-//   let userType = await UserType.find({userType: 'General Admin'});
-//   if(userType.length == 0) {
-//     //general_id.save()
-//     userType.save();
-//   }
-// }
-
 const userFind = async () => {
   let userType = await UserType.find({ userType: "General Admin" });
   if (userType.length == 0) {

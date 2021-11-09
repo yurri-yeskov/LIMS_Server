@@ -25,6 +25,7 @@ exports.createInputLaboratory = function (req, res) {
   }
 
   var inputLaboratory = new InputLaboratory({
+    stockinfo: req.body.stocksampleinfo,
     sample_type: req.body.sample_type,
     material: req.body.material,
     client: req.body.client,
@@ -531,18 +532,29 @@ exports.sample_material = (req, res) => {
       .catch((err) => res.status(500).send({ message: err.message }));
   });
 
-  req.body.analysisType.map((e) => {
-    InputLaboratory.findById(req.body.selfid)
-      .then((e4) => {
-        if (e4.a_types.filter((v) => v == e).length == 0) {
-          e4.a_types.push(e);
-        }
-        e4.save()
-          .then()
-          .catch((err) => res.status(500).send({ message: err.message }));
-      })
-      .catch((err) => res.status(500).send({ message: err.message }));
-  });
+  InputLaboratory.findByIdAndUpdate(
+    req.body.selfid,
+    { a_types: req.body.analysisType, c_types: [], stockinfo: "2" },
+    function (err, docs) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Updated User : ", docs);
+      }
+    }
+  );
+  // req.body.analysisType.map((e) => {
+  //   InputLaboratory.findById(req.body.selfid)
+  //     .then((e4) => {
+  //       if (e4.a_types.filter((v) => v == e).length == 0) {
+  //         e4.a_types.push(e);
+  //       }
+  //       e4.save()
+  //         .then()
+  //         .catch((err) => res.status(500).send({ message: err.message }));
+  //     })
+  //     .catch((err) => res.status(500).send({ message: err.message }));
+  // });
 
   req.body.certificate.map((e) => {
     InputLaboratory.findById(req.body.selfid)
