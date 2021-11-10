@@ -4,6 +4,8 @@ const Schema = mongoose.Schema;
 
 let inputLaboratory = new Schema(
   {
+    self_analysis_cnt: { type: Number },
+    self_certificate_cnt: { type: Number },
     stockinfo: { type: String },
     sample_type: { type: String },
     material: { type: String },
