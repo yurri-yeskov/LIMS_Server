@@ -16,8 +16,6 @@ var certificateCtr = require("../controllers/certificateCtr");
 var PDFCtr = require("../controllers/getPDFCtr");
 var multer = require("multer");
 
-console.log(__dirname);
-
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(
@@ -42,7 +40,7 @@ exports.init = function (app) {
   app.post("/create_user", usersController.createUser);
   app.post("/delete_user", usersController.deleteUser);
   app.post("/update_user", usersController.updateUser);
-  app.post("/remove_mat", InputLaboratoryController.Del_material);
+  // app.post("/remove_mat", InputLaboratoryController.Del_material);
 
   app.get("/get_all_objectives", objectivesController.getAllObjectives);
   app.post("/create_objective", objectivesController.createObjective);
@@ -54,7 +52,6 @@ exports.init = function (app) {
   app.post("/create_packingType", packingTypesController.createPackingType);
   app.post("/delete_packingType", packingTypesController.deletePackingType);
   app.post("/update_packingType", packingTypesController.updatePackingType);
-
   app.post(
     "/upload_packingType_csv",
     packingTypesController.uploadPackingTypeCSV
@@ -143,12 +140,6 @@ exports.init = function (app) {
   app.post("/add_weight", InputLaboratoryController.addWeight);
   app.post("/add_charge", InputLaboratoryController.addCharge);
   app.post("/get_userTypes", InputLaboratoryController.getUserTypes);
-  app.post("/add_mat", InputLaboratoryController.add_material);
-  app.post("/add_multi_mat", InputLaboratoryController.add_multi_material);
-  app.post("/del_mat", InputLaboratoryController.del_material);
-  app.post("/sample_mat", InputLaboratoryController.sample_material);
-  app.post("/weight_mat", InputLaboratoryController.weight_material);
-  app.post("/lot_mat", InputLaboratoryController.lot_material);
 
   app.get("/get_objective_history", objectiveHistory.getObjectiveHistory);
   app.post(
@@ -198,4 +189,17 @@ exports.init = function (app) {
   app.get("*", (req, res) => {
     res.status(404).send({ message: "Invalid URL" });
   });
+
+  // KCH NEW CODING
+  app.post("/analysis_mat", InputLaboratoryController.analysis_mataterial);
+  app.post(
+    "/certificate_mat",
+    InputLaboratoryController.certificate_mataterial
+  );
+  app.post("/weight_mat", InputLaboratoryController.weight_material);
+  app.post("/lot_mat", InputLaboratoryController.lot_material);
+  app.post("/stocksample_mat", InputLaboratoryController.stocksample_material);
+  app.post("/add_multi_mat", InputLaboratoryController.add_multi_material);
+
+  app.post("/add_mat", InputLaboratoryController.add_material);
 };

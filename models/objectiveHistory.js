@@ -11,7 +11,7 @@ let objectiveHistory = new Schema({
     type: String,
   },
   limitValue: {
-    type: Number,
+    type: String,
   },
   comment: {
     type: String,
@@ -42,6 +42,12 @@ let objectiveHistory = new Schema({
   },
   accept: {
     type: Boolean,
+  },
+  stockok: {
+    type: String,
+  },
+  savedatetime: {
+    type: String,
   },
 });
 

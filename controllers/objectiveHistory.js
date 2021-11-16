@@ -19,6 +19,8 @@ exports.getObjectiveHistory = async function (req, res) {
 
 exports.createObjectiveHistory = function (req, res) {
   var token = jwt.decode(req.body.token);
+  var stock_ok = req.body.objectstock;
+  var nowDate = req.body.nowDate;
   var objectiveHistory = [];
 
   req.body.data.map((item) => {
@@ -41,6 +43,8 @@ exports.createObjectiveHistory = function (req, res) {
         update_date: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
         reason: reason,
         accept: item.accept,
+        stockok: stock_ok,
+        savedatetime: nowDate,
       });
 
       objectiveHistory.save().then((data) => {
@@ -85,8 +89,9 @@ exports.createObjectiveHistory = function (req, res) {
             update_date: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
             reason: item.reason,
             accept: item.accept,
+            stockok: stock_ok,
+            savedatetime: nowDate,
           });
-
           objectiveHistory.save().then((data) => {
             async.mapSeries(
               item,
@@ -123,6 +128,8 @@ exports.createObjectiveHistory = function (req, res) {
         update_date: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
         reason: item.reason,
         accept: item.accept,
+        stockok: stock_ok,
+        savedatetime: nowDate,
       });
 
       objectiveHistory.save().then((data) => {

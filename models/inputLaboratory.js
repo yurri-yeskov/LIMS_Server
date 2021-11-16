@@ -4,9 +4,8 @@ const Schema = mongoose.Schema;
 
 let inputLaboratory = new Schema(
   {
-    self_analysis_cnt: { type: Number },
-    self_certificate_cnt: { type: Number },
-    stockinfo: { type: String },
+    datetimestore: { type: Array, default: [] },
+    stockinfo: { type: Number },
     sample_type: { type: String },
     material: { type: String },
     client: { type: String },
@@ -16,7 +15,6 @@ let inputLaboratory = new Schema(
     sending_date: { type: String },
     a_types: { type: Array, default: [] },
     c_types: { type: Array, default: [] },
-    idstore: { type: Array, default: [] },
     distributor: { type: String },
     geo_locaion: { type: String },
     remark: { type: String },
