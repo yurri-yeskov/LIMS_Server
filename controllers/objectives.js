@@ -1,14 +1,17 @@
 
-var Objective = require('../models/objectives');
-var Unit = require('../models/units');
-var CSV = require('csv-string');
+const Objective = require('../models/objectives');
+const Unit = require('../models/units');
+const CSV = require('csv-string');
 
 exports.getAllObjectives = async function(req, res) {
   try {
-    const objectives = await Objective.find();
     const units = await Unit.find();
+    const objectives = await Objective.find().populate('units')
 
-    res.send({units, objectives});
+    return res.json({
+      units: units,
+      objectives: objectives
+    })
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
@@ -20,7 +23,7 @@ exports.createObjective = async function(req, res) {
         return;
     }
 
-    var objective = new Objective({
+    let objective = new Objective({
       objective_id: req.body.objective_id,
       objective: req.body.objective,
       units: req.body.units,
@@ -28,16 +31,20 @@ exports.createObjective = async function(req, res) {
     });
 
     try {
-      const existing = await Objective.find({objective: req.body.objective});
+      const existing = await Objective.find({ objective: req.body.objective });
       if (existing.length > 0) {
         res.send({ status: 0 });
       }
       else {
         await objective.save();
-        const objectives = await Objective.find();
+
         const units = await Unit.find();
-    
-        res.send({units, objectives});
+        const objectives = await Objective.find().populate('units')
+
+        return res.json({
+          units: units,
+          objectives: objectives
+        })
       }
     } catch (err) {
       res.status(500).send({ message: err.message });
@@ -50,10 +57,10 @@ exports.updateObjective = async function(req, res) {
       return;
     }
 
-    var id = req.body.id;
+    let id = req.body.id;
     
     try {
-      const existing = await Objective.find({objective: req.body.objective});
+      const existing = await Objective.find({ objective: req.body.objective });
       if (existing.length > 0 && existing[0]._id != id) {
         res.send({ status: 0 });
       }
@@ -64,13 +71,17 @@ exports.updateObjective = async function(req, res) {
           units: req.body.units,
           remark: req.body.remark},
           { useFindAndModify: false }); 
+        
         if (!data)
           res.status(404).send({ message: `Cannot update object with id = ${id}. Maybe object was not found!` });
         else {
-          const objectives = await Objective.find();
+          const objectives = await Objective.find().populate('units');
           const units = await Unit.find();
       
-          res.send({units, objectives});
+          res.json({
+            units: units, 
+            objectives: objectives
+          });
         }
       }
     } catch (err) {
@@ -84,7 +95,7 @@ exports.deleteObjective = async function(req, res) {
         return;
     }
 
-    var id = req.body.id;
+    let id = req.body.id;
 
     try {
       const data = await Objective.findByIdAndRemove(id, { useFindAndModify: false })
@@ -104,18 +115,18 @@ exports.deleteObjective = async function(req, res) {
 exports.uploadObjectiveCSV = async function(req, res){
   const parsedCSV = CSV.parse(req.body.data);
   try{
-    for (var i = 1; i < parsedCSV.length; i ++) {
-      var aCSV = parsedCSV[i];
-      var unit_data = [];
+    for (let i = 1; i < parsedCSV.length; i ++) {
+      let aCSV = parsedCSV[i];
+      let unit_data = [];
       if(aCSV[2] != ''){
-        var units = [];
+        let units = [];
         if(aCSV[2].indexOf('\n') === -1){
           units.push(aCSV[2])
         }else{
           units = aCSV[2].split('\n');
         }
-        for(var j=0; j< units.length; j++){
-          var temp = await Unit.findOne({unit:units[j]})
+        for(let j=0; j< units.length; j++){
+          let temp = await Unit.findOne({unit: units[j]})
           unit_data.push(temp._id);
         }
       }

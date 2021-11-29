@@ -1,20 +1,19 @@
-
-var Client = require('../models/clients');
-var CSV = require('csv-string');
+const Client = require('../models/clients');
+const CSV = require('csv-string');
 
 exports.getAllClients = function(req, res) {
   
     Client.find().then(data => {
-      res.send(data);
+      res.json(data);
     })
     .catch(err => {
-      res.status(500).send({ message: err.message });
+      res.status(500).json({ message: err.message });
     });
 }
 
-exports.createClient = function(req, res) {
+exports.createClient = async (req, res) => {
     if (req.body === undefined || req.body.clientId === undefined || !req.body.clientId) {
-        res.status(400).send({ message: "Client name can not be empty!" });
+        res.status(400).json({ message: "Client name can not be empty!" });
         return;
     }
 
@@ -38,20 +37,14 @@ exports.createClient = function(req, res) {
         remark1: req.body.remark1,
         remark2: req.body.remark2
     });
-    
-    client.save().then(data => {
-      Client.find().then(data => {
-        res.send(data);
-      })
-    })
-    .catch(err => {
-      res.status(500).send({ message: err.message });
-    });
+    await client.save();
+    const clients = await Client.find()
+    return res.json(clients)
 }
 
 exports.updateClient = function(req, res) {
     if (req.body === undefined || req.body.id === undefined || !req.body.id) {
-      res.status(400).send({ message: "Client id can not be empty!" });
+      res.status(400).json({ message: "Client id can not be empty!" });
       return;
     }
 
@@ -78,21 +71,21 @@ exports.updateClient = function(req, res) {
       remark2: req.body.remark2},
       { useFindAndModify: false }).then(data => {
         if (!data)
-          res.status(404).send({ message: `Cannot update object with id = ${id}. Maybe object was not found!` });
+          res.status(404).json({ message: `Cannot update object with id = ${id}. Maybe object was not found!` });
         else {
           Client.find().then(data => {
-            res.send(data);
+            res.json(data);
           })
         }
       })
       .catch(err => {
-        res.status(500).send({ message: "Could not update object with id = " + id });
+        res.status(500).json({ message: "Could not update object with id = " + id });
       });
 }
 
 exports.deleteClient = function(req, res) {
     if (req.body === undefined || req.body.id === undefined || !req.body.id) {
-        res.status(400).send({ message: "Client id can not be empty!" });
+        res.status(400).json({ message: "Client id can not be empty!" });
         return;
     }
 
@@ -100,15 +93,15 @@ exports.deleteClient = function(req, res) {
 
     Client.findByIdAndRemove(id, { useFindAndModify: false }).then(data => {
       if (!data)
-        res.status(404).send({ message: `Cannot delete object with id = ${id}. Maybe object was not found!` });
+        res.status(404).json({ message: `Cannot delete object with id = ${id}. Maybe object was not found!` });
       else {
         Client.find().then(data => {
-          res.send(data);
+          res.json(data);
         })
       }
     })
     .catch(err => {
-      res.status(500).send({ message: "Could not delete object with id = " + id });
+      res.status(500).json({ message: "Could not delete object with id = " + id });
     });
 }
 
@@ -144,9 +137,9 @@ exports.uploadClientCSV = async function(req, res) {
     }
 
     const clients = await Client.find();
-    res.send({clients});
+    res.json({clients});
   }
   catch (err) {
-    res.status(500).send({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 }

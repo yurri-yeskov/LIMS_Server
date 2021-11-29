@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "async": "^3.2.1",
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "csv-string": "^4.0.1",
@@ -21,7 +22,11 @@
     "moment": "^2.29.1",
     "mongoose": "^5.12.7",
     "multer": "^1.4.3",
-    "node-color-log": "^5.2.0"
+    "node-color-log": "^5.2.0",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "path": "^0.12.7",
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.12"

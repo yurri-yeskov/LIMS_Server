@@ -2,13 +2,10 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-let packingType = new Schema(
-  {
-    packingType_id: { type: String },
-    packingType: { type: String },
-    remark: { type: String }
-  },
-  { collection: "packingTypes" }
-);
+const packingSchema = new Schema({
+  packingType_id: { type: String },
+  packingType: { type: String },
+  remark: { type: String }
+})
 
-module.exports = mongoose.model("packingTypes", packingType);
+module.exports = Packings = mongoose.model("packingTypes", packingSchema);

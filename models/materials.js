@@ -2,18 +2,26 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-let material = new Schema(
-  {
-    material_id: { type: String },
-    material: { type: String },
-    objectiveValues: { type: Array },    
-    clients: { type: Array },
-    //clients: { type: Schema.Types.ObjectId, ref:'clients' },
-    aTypesValues: { type: Array },
-    //aTypesValues: { type: Schema.Types.ObjectId, ref: 'analysisTypes'},
-    remark: { type: String }
+const materialSchema = new Schema({
+  material_id: {
+    type: String
   },
-  { collection: "materials" }
-);
+  material: {
+    type: String
+  },
+  objectiveValues: {
+    type: Array
+  },
+  clients: [{
+    type: Schema.Types.ObjectId,
+    ref: 'clients'
+  }],
+  aTypesValues: {
+    type: Array
+  },
+  remark: {
+    type: String
+  }
+});
 
-module.exports = mongoose.model("materials", material);
+module.exports = Material = mongoose.model("materials", materialSchema);

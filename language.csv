@@ -1,0 +1,86 @@
+English,German,_id,label
+Administration,Administration,616562737c69584c3a01499d,administration
+Settings,Einstellungen,616562e07c69584c3a01499f,setting
+Login,Login,616563167c69584c3a0149a4,login
+Help,Hilfe,616563307c69584c3a0149a5,help
+Input,Eingabe,616594467c69584c3a0149a6,input
+Laboratory,Labor,616594a27c69584c3a0149a7,laboratory
+Analysis,Analyse,616594d57c69584c3a0149a8,analysis
+Stock Management,Lager Verwaltung,616595337c69584c3a0149a9,stock_management
+Spare Parts,Ersatzteile,616595917c69584c3a0149aa,spare_parts
+Import/Export,Import/Export,616595dc7c69584c3a0149ab,import_export
+HS,HS,6165960c7c69584c3a0149ac,hs
+Geo-Information System,Geo-Informations System,616596507c69584c3a0149ad,geo_info_system
+Reports,Berichte,616596a87c69584c3a0149ae,reports
+Excel,Excel,616596d47c69584c3a0149af,excel
+Home,Home,6165971c7c69584c3a0149b0,home
+Import,Import,6165a2887c69584c3a0149b1,import
+Export,Export,6165a2c07c69584c3a0149b2,export
+User,Benutzer,6165cbf07c69584c3a0149b3,user
+User Types,Benutzer-Typen,6165cc377c69584c3a0149b4,user_types
+Sample Types,Probe-Arten,6165cc5d7c69584c3a0149b5,sample_types
+Material,Material,6165cc8b7c69584c3a0149b6,material
+Analysis Types,Analyse Typen,6165ccbf7c69584c3a0149b7,analysis_types
+Objectives,Spaltenbezeichnungen,6165cce97c69584c3a0149b8,objectives
+Packing Types,Verpackungstypen,6165cd2f7c69584c3a0149b9,packing_types
+Certificate Types,Zertifikate,6165cd687c69584c3a0149ba,certificate_types
+Unit Types,Einheiten,6165cde97c69584c3a0149bb,unit_types
+Clients,Kunden,6165ce0f7c69584c3a0149bc,clients
+Reason,Begründung,6165ce247c69584c3a0149bd,reason
+Certificate Template,Zertifikat Vorlage,6165ce467c69584c3a0149be,certificate_template
+User ID,Benutzer ID,6165dfab7c69584c3a0149bf,user_id
+User Name,Benutzer Name,6165dfcf7c69584c3a0149c0,user_name
+Email,Email,6165dff27c69584c3a0149c1,email
+Password,Passwort,6165e0157c69584c3a0149c2,password
+User Type,Benutzer Typ,6165e0417c69584c3a0149c3,user_type
+Remark,Anmerkung,6165e0917c69584c3a0149c4,remark
+Create New,Neu,6165e0d57c69584c3a0149c5,create_new
+User Type ID,Benutzertyp ID,6165eaac7c69584c3a0149c6,user_type_id
+Admin,Admin,6165eaf67c69584c3a0149c7,admin
+Geology,Geologie,6165eb3b7c69584c3a0149c8,geology
+Stock,Lager,6165ecee7c69584c3a0149c9,stock
+Sample Type ID,Probentyp ID,61665f117c69584c3a0149ca,sample_type_id
+Sample Type,Probentyp Typ,61665f237c69584c3a0149cb,sample_type
+Client,Kunde,61665f567c69584c3a0149cc,client
+Packing Type,Verpackungsart,61665f837c69584c3a0149cd,packing_type
+Due Date,Fälligkeitsdatum,61665fe07c69584c3a0149ce,due_date
+Sample Date,Probendatum,616660267c69584c3a0149cf,sample_date
+Sending Date,Versanddatum,6166604d7c69584c3a0149d0,sending_date
+Analysis Type,Analyse Typ,6166607d7c69584c3a0149d1,analysis_type
+Incoming Product,Eingehendes Produkt,616661197c69584c3a0149d2,incoming_product
+Distributor,Verteiler,6166614d7c69584c3a0149d3,distributor
+Certificate Type,Zertifikat Typ,616661767c69584c3a0149d4,certificate_type
+Material ID,Material ID,616667a07c69584c3a0149d5,material_id
+AnalysisType-Objectives,AnalyseTyp-Zielsetzungen,616668297c69584c3a0149d6,analysistype_objectives
+Analysis Type ID,Analyse Typ ID,61666f527c69584c3a0149d7,analysistype_id
+Norm,Norm,61666f837c69584c3a0149d8,norm
+Objective ID,Zielsetzung ID,616672797c69584c3a0149d9,objective_id
+Objective,Zielsetzung,616672b37c69584c3a0149da,objective
+Units,Einheiten,616673dc7c69584c3a0149db,units
+Packing Type ID,Verpackungstyp ID,616674127c69584c3a0149dc,packing_type_id
+Packing Type,Verpackungstyp,6166742d7c69584c3a0149dd,packing_type
+Certificate Type ID,Zertifikat Typ ID,616674b97c69584c3a0149df,certificate_type_id
+Unit,Einheit,61667da07c69584c3a0149e0,unit
+Unit ID,Einheit ID,61667dad7c69584c3a0149e1,unit_id
+Zip Code,Postleitzahl,6166a17aef969f5657d21b7c,zip_code
+Name,Name,6166a19aef969f5657d21b7d,name
+Client ID,Kundennummer,6166a368ef969f5657d21b7e,client_id
+Other,Sonstiges,6166a3afef969f5657d21b7f,other
+Country,Land,6166a3e9ef969f5657d21b80,country
+City,Stadt,6166a420ef969f5657d21b81,city
+Address,Adresse,6166a44fef969f5657d21b82,address
+Reason ID,Ursache ID,6166a4d1ef969f5657d21b83,reason_id
+Certificate Title,Zertifikatstitel,6166a514ef969f5657d21b84,certificate_title
+Company,Firma,6166a53fef969f5657d21b85,company
+Logo,Logo,6166a554ef969f5657d21b86,logo
+Place,Ort,6166a56aef969f5657d21b87,place
+Date Format,Datumsformat,6166a58eef969f5657d21b88,date_format
+Product Data,Produktdaten,6166a5bcef969f5657d21b89,product_data
+Table Columns,Tabellenspalten,6166a5ecef969f5657d21b8a,table_columns
+Free Text,Freier Text,6166a60bef969f5657d21b8b,free_text
+Footer,Fußzeile,6166a621ef969f5657d21b8c,footer
+Certificate,Zertifikat,6166ca08ef969f5657d21b8d,certificate
+Weight(actual),Gewicht(tatsächlich),6166ca4def969f5657d21b8e,weight_actual
+Lot Number,Lot Number,6166ca8fef969f5657d21b8f,charge
+Material Left,Material Left,6166ca8fef969f5657d21b90,material_left
+Stock Sample,Stock Sample,6166ca8fef969f5657d21b91,stock_sample

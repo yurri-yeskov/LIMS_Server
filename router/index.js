@@ -1,26 +1,27 @@
-var usersController = require("../controllers/users.js");
-var objectivesController = require("../controllers/objectives.js");
-var packingTypesController = require("../controllers/packingTypes.js");
-var certificateTypesController = require("../controllers/certificateTypes.js");
-var analysisTypesController = require("../controllers/analysisTypes.js");
-var sampleTypesController = require("../controllers/sampleTypes.js");
-var userTypesController = require("../controllers/userTypes.js");
-var materialsController = require("../controllers/materials.js");
-var unitsController = require("../controllers/units.js");
-var clientsController = require("../controllers/clients.js");
-var InputLaboratoryController = require("../controllers/inputLaboratory.js");
-var AnalysisLaboratoryController = require("../controllers/analysisLaboratory.js");
-var objectiveHistory = require("../controllers/objectiveHistory.js");
-var reasonController = require("../controllers/reasonController");
-var certificateCtr = require("../controllers/certificateCtr");
-var PDFCtr = require("../controllers/getPDFCtr");
-var multer = require("multer");
+const usersController = require("../controllers/users.js");
+const objectivesController = require("../controllers/objectives.js");
+const packingTypesController = require("../controllers/packingTypes.js");
+const certificateTypesController = require("../controllers/certificateTypes.js");
+const analysisTypesController = require("../controllers/analysisTypes.js");
+const sampleTypesController = require("../controllers/sampleTypes.js");
+const userTypesController = require("../controllers/userTypes.js");
+const materialsController = require("../controllers/materials.js");
+const unitsController = require("../controllers/units.js");
+const clientsController = require("../controllers/clients.js");
+const InputLaboratoryController = require("../controllers/inputLaboratory.js");
+const AnalysisLaboratoryController = require("../controllers/analysisLaboratory.js");
+const objectiveHistory = require("../controllers/objectiveHistory.js");
+const reasonController = require("../controllers/reasonController");
+const certificateCtr = require("../controllers/certificateCtr");
+const PDFCtr = require("../controllers/getPDFCtr");
+const multer = require("multer");
 
-var storage = multer.diskStorage({
+const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    // console.log(__dirname);
     cb(
       null,
-      __dirname.substr(0, __dirname.length - 14) + "\\client\\public\\uploads"
+      __dirname.substr(0, __dirname.length - 13) + "client\\public\\uploads"
     );
     console.log(__dirname);
   },
@@ -28,7 +29,7 @@ var storage = multer.diskStorage({
     cb(null, Date.now() + "-" + file.originalname);
   },
 });
-var upload = multer({ storage: storage });
+const upload = multer({ storage: storage });
 
 exports.init = function (app) {
   app.post("/get_language", AnalysisLaboratoryController.getLanguage);
@@ -52,43 +53,19 @@ exports.init = function (app) {
   app.post("/create_packingType", packingTypesController.createPackingType);
   app.post("/delete_packingType", packingTypesController.deletePackingType);
   app.post("/update_packingType", packingTypesController.updatePackingType);
-  app.post(
-    "/upload_packingType_csv",
-    packingTypesController.uploadPackingTypeCSV
-  );
+  app.post("/upload_packingType_csv", packingTypesController.uploadPackingTypeCSV);
 
-  app.get(
-    "/get_all_certificateTypes",
-    certificateTypesController.getAllCertificateTypes
-  );
-  app.post(
-    "/create_certificateType",
-    certificateTypesController.createCertificateType
-  );
-  app.post(
-    "/delete_certificateType",
-    certificateTypesController.deleteCertificateType
-  );
-  app.post(
-    "/update_certificateType",
-    certificateTypesController.updateCertificateType
-  );
-  app.post(
-    "/upload_certificatetype_csv",
-    certificateTypesController.uploadCertificateTypeCSV
-  );
+  app.get("/get_all_certificateTypes", certificateTypesController.getAllCertificateTypes);
+  app.post("/create_certificateType", certificateTypesController.createCertificateType);
+  app.post("/delete_certificateType", certificateTypesController.deleteCertificateType);
+  app.post("/update_certificateType", certificateTypesController.updateCertificateType);
+  app.post("/upload_certificatetype_csv", certificateTypesController.uploadCertificateTypeCSV);
 
-  app.get(
-    "/get_all_analysisTypes",
-    analysisTypesController.getAllAnalysisTypes
-  );
+  app.get("/get_all_analysisTypes", analysisTypesController.getAllAnalysisTypes);
   app.post("/create_analysisType", analysisTypesController.createAnalysisType);
   app.post("/delete_analysisType", analysisTypesController.deleteAnalysisType);
   app.post("/update_analysisType", analysisTypesController.updateAnalysisType);
-  app.post(
-    "/upload_analysisType_csv",
-    analysisTypesController.uploadAnalysisTypeCSV
-  );
+  app.post("/upload_analysisType_csv", analysisTypesController.uploadAnalysisTypeCSV);
 
   app.get("/get_all_sampleTypes", sampleTypesController.getAllSampleTypes);
   app.post("/create_sampleType", sampleTypesController.createSampleType);
@@ -120,32 +97,17 @@ exports.init = function (app) {
   app.post("/update_client", clientsController.updateClient);
   app.post("/upload_client_csv", clientsController.uploadClientCSV);
 
-  app.post(
-    "/create_input_laboratory",
-    InputLaboratoryController.createInputLaboratory
-  );
-  app.post(
-    "/update_input_laboratory",
-    InputLaboratoryController.updateInputLaboratory
-  );
+  app.post("/create_input_laboratory", InputLaboratoryController.createInputLaboratory);
+  app.post("/update_input_laboratory", InputLaboratoryController.updateInputLaboratory);
   app.get("/get_all_input_laboratory", InputLaboratoryController.getAllData);
-  app.post(
-    "/delete_input_laboratory",
-    InputLaboratoryController.deleteInputLaboratory
-  );
-  app.post(
-    "/upload_laboratory_csv",
-    InputLaboratoryController.uploadLaboratoryCSV
-  );
+  app.post("/delete_input_laboratory",InputLaboratoryController.deleteInputLaboratory);
+  app.post("/upload_laboratory_csv", InputLaboratoryController.uploadLaboratoryCSV);
   app.post("/add_weight", InputLaboratoryController.addWeight);
   app.post("/add_charge", InputLaboratoryController.addCharge);
   app.post("/get_userTypes", InputLaboratoryController.getUserTypes);
 
   app.get("/get_objective_history", objectiveHistory.getObjectiveHistory);
-  app.post(
-    "/create_objective_history",
-    objectiveHistory.createObjectiveHistory
-  );
+  app.post("/create_objective_history", objectiveHistory.createObjectiveHistory);
 
   app.get("/get_all_reason", reasonController.getAllReason);
   app.post("/create_reason", reasonController.createReason);
@@ -154,28 +116,12 @@ exports.init = function (app) {
   app.post("/upload_reason_csv", reasonController.uploadReasonCSV);
 
   app.post("/get_graph_data", AnalysisLaboratoryController.getGraphData);
-  app.post(
-    "/get_objective_history_for_chart",
-    AnalysisLaboratoryController.getObjectiveHistoryData
-  );
-  app.post(
-    "/get_available_analysis_type",
-    AnalysisLaboratoryController.getAvailableanalysisType
-  );
-  app.post(
-    "/get_input_laboratory_by_id",
-    AnalysisLaboratoryController.getinputlaboratorybyid
-  );
+  app.post("/get_objective_history_for_chart", AnalysisLaboratoryController.getObjectiveHistoryData);
+  app.post("/get_available_analysis_type", AnalysisLaboratoryController.getAvailableanalysisType);
+  app.post("/get_input_laboratory_by_id", AnalysisLaboratoryController.getinputlaboratorybyid);
   app.get("/get_certificate", certificateCtr.getCertificate);
-  app.post(
-    "/get_certificate_datefotmat",
-    certificateCtr.getCertificate_dateformat
-  );
-  app.post(
-    "/add_certificate",
-    upload.array("files"),
-    certificateCtr.AddCertificate
-  );
+  app.post("/get_certificate_datefotmat", certificateCtr.getCertificate_dateformat);
+  app.post("/add_certificate", upload.array("files"), certificateCtr.AddCertificate);
   app.post("/del_certificate", certificateCtr.DelCertificate);
   app.post("/update_productdata", certificateCtr.Upproductdata);
   app.post("/update_tabledata", certificateCtr.Uptabledata);
@@ -192,10 +138,7 @@ exports.init = function (app) {
 
   // KCH NEW CODING
   app.post("/analysis_mat", InputLaboratoryController.analysis_mataterial);
-  app.post(
-    "/certificate_mat",
-    InputLaboratoryController.certificate_mataterial
-  );
+  app.post("/certificate_mat", InputLaboratoryController.certificate_mataterial);
   app.post("/weight_mat", InputLaboratoryController.weight_material);
   app.post("/lot_mat", InputLaboratoryController.lot_material);
   app.post("/stocksample_mat", InputLaboratoryController.stocksample_material);

@@ -1,11 +1,9 @@
 const jwt = require("jsonwebtoken");
-const ObjectiveHistory = require("../models/objectiveHistory");
-var InputLaboratory = require("../models/inputLaboratory");
-var Client = require("../models/clients");
-var UserType = require("../models/userTypes");
-var CSV = require("csv-string");
-var moment = require("moment");
-const { parse } = require("csv-string");
+const InputLaboratory = require("../models/inputLaboratory");
+const Client = require("../models/clients");
+const UserType = require("../models/userTypes");
+const CSV = require("csv-string");
+const moment = require("moment");
 
 exports.getAllData = function (req, res) {
   InputLaboratory.find()
@@ -25,7 +23,7 @@ exports.createInputLaboratory = function (req, res) {
     return;
   }
 
-  var inputLaboratory = new InputLaboratory({
+  let inputLaboratory = new InputLaboratory({
     self_analysis_cnt: req.body.analysiscnt,
     self_certificate_cnt: req.body.certificatecnt,
     stockinfo: req.body.vvState,
@@ -63,7 +61,7 @@ exports.updateInputLaboratory = function (req, res) {
     return;
   }
 
-  var id = req.body.id;
+  let id = req.body.id;
 
   InputLaboratory.findByIdAndUpdate(
     id,
@@ -109,7 +107,7 @@ exports.deleteInputLaboratory = function (req, res) {
     return;
   }
 
-  var id = req.body.id;
+  let id = req.body.id;
 
   InputLaboratory.findByIdAndRemove(id, { useFindAndModify: false })
     .then((data) => {
@@ -133,15 +131,15 @@ exports.deleteInputLaboratory = function (req, res) {
 exports.uploadLaboratoryCSV = async function (req, res) {
   const parsedCSV = CSV.parse(req.body.data);
 
-  var update = { delivering: {} };
+  let update = { delivering: {} };
 
   if (parsedCSV.length > 0) {
     await InputLaboratory.deleteMany();
   }
 
   // try {
-  for (var j = 1; j < parsedCSV.length; j++) {
-    for (var i = 0; i < parsedCSV[0].length; i++) {
+  for (let j = 1; j < parsedCSV.length; j++) {
+    for (let i = 0; i < parsedCSV[0].length; i++) {
       if (parsedCSV[0][i] === "Due Date") {
         update.due_date = parsedCSV[j][i];
       }
@@ -152,7 +150,7 @@ exports.uploadLaboratoryCSV = async function (req, res) {
         update.material = parsedCSV[j][i];
       }
       if (parsedCSV[0][i] === "Client") {
-        var data = "";
+        let data = "";
         await Client.findOne({ name: parsedCSV[j][i] }).then((res) => {
           data = res._id;
         });
@@ -163,14 +161,14 @@ exports.uploadLaboratoryCSV = async function (req, res) {
         update.packing_type = parsedCSV[j][i];
       }
       if (parsedCSV[0][i] === "Analysis Type") {
-        var analysis = parsedCSV[j][i].split(",");
+        let analysis = parsedCSV[j][i].split(",");
         if (parsedCSV[j][i] === "") {
           analysis = [];
         }
         update.a_types = analysis;
       }
       if (parsedCSV[0][i] === "Certificate") {
-        var certificate = parsedCSV[j][i].split(",");
+        let certificate = parsedCSV[j][i].split(",");
         if (parsedCSV[j][i] === "") {
           certificate = [];
         }
@@ -216,7 +214,7 @@ exports.uploadLaboratoryCSV = async function (req, res) {
         update.delivering.customer_product_code = parsedCSV[j][i];
       }
       if (parsedCSV[0][i] === "E-mail Address") {
-        var emails = parsedCSV[j][i].split(",");
+        let emails = parsedCSV[j][i].split(",");
         if (parsedCSV[j][i] === "") {
           emails = [];
         }
@@ -236,7 +234,7 @@ exports.uploadLaboratoryCSV = async function (req, res) {
       }
     }
 
-    var laboratory1 = new InputLaboratory(update);
+    let laboratory1 = new InputLaboratory(update);
     await laboratory1.save();
   }
 
@@ -249,7 +247,7 @@ exports.uploadLaboratoryCSV = async function (req, res) {
 };
 
 exports.getUserTypes = function (req, res) {
-  var token = jwt.decode(req.body.token);
+  let token = jwt.decode(req.body.token);
   UserType.findOne({ userType: token.userType }).then((data) => {
     if (data) {
       if (data.userType === "General Admin" || data.labAdmin === true) {
@@ -267,9 +265,9 @@ exports.addWeight = function (req, res) {
     return;
   }
 
-  var token = jwt.decode(req.body.token);
+  let token = jwt.decode(req.body.token);
 
-  var WeightHistory = [];
+  let WeightHistory = [];
 
   if (req.body.data.id === "") {
     WeightHistory.push({
@@ -338,9 +336,9 @@ exports.addCharge = function (req, res) {
     return;
   }
 
-  var token = jwt.decode(req.body.token);
+  let token = jwt.decode(req.body.token);
 
-  var ChargeHistory = [];
+  let ChargeHistory = [];
 
   if (req.body.data.id === "") {
     ChargeHistory.push({
@@ -476,13 +474,13 @@ exports.weight_material = (req, res) => {
   InputLaboratory.findById(req.body.selfid)
     .then((e2) => {
       if (e2.Weight.length == 0) {
-        var totalWeightValue = req.body.weight_value;
+        let totalWeightValue = req.body.weight_value;
       } else {
-        var totalWeightValue =
+        let totalWeightValue =
           Number(req.body.weight_value) +
           Number(e2.Weight[e2.Weight.length - 1].weight);
       }
-      var weightarr = {
+      let weightarr = {
         weight: totalWeightValue,
         update_date: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
       };

@@ -1,6 +1,6 @@
 
-var PackingType = require('../models/packingTypes');
-var CSV = require('csv-string');
+const PackingType = require('../models/packingTypes');
+const CSV = require('csv-string');
 
 exports.getAllPackingTypes = function(req, res) {
     PackingType.find().then(data => {
@@ -17,7 +17,7 @@ exports.createPackingType = function(req, res) {
         return;
     }
 
-    var packingType = new PackingType({
+    let packingType = new PackingType({
         packingType_id: req.body.packingType_id,
         packingType: req.body.packingType,
         remark: req.body.remark
@@ -39,7 +39,7 @@ exports.updatePackingType = function(req, res) {
       return;
     }
 
-    var id = req.body.id;
+    let id = req.body.id;
 
     PackingType.findByIdAndUpdate(id, {
       packingType_id: req.body.packingType_id,
@@ -65,7 +65,7 @@ exports.deletePackingType = function(req, res) {
         return;
     }
 
-    var id = req.body.id;
+    let id = req.body.id;
 
     PackingType.findByIdAndRemove(id, { useFindAndModify: false }).then(data => {
       if (!data)
@@ -87,8 +87,8 @@ exports.uploadPackingTypeCSV = async function(req, res){
   }
   const parsedCSV = CSV.parse(req.body.data);
   try{
-    for (var i = 1; i < parsedCSV.length; i ++) {
-      var aCSV = parsedCSV[i];
+    for (let i = 1; i < parsedCSV.length; i ++) {
+      let aCSV = parsedCSV[i];
         let query = { packingType_id: aCSV[0] };
         let update = {
           packingType:aCSV[1],

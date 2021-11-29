@@ -2,12 +2,23 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-let analysisType = new Schema(
+const analysisType = new Schema(
   {
     analysisType_id: { type: String },
     analysisType: { type: String },
     norm: { type: String },
-    objectives: { type: Array },
+    objectives: [
+      {
+        id: {
+          type: Schema.Types.ObjectId,
+          ref: 'objectives'
+        },
+        unit: {
+          type: Schema.Types.ObjectId,
+          ref: 'units'
+        }
+      }
+    ],
     remark: { type: String }
   },
   { collection: "analysisTypes" }

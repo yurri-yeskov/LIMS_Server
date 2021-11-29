@@ -1,6 +1,6 @@
 const ObjectiveHistory = require("../models/objectiveHistory");
 const Unit = require("../models/units");
-var jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const async = require("async");
 
@@ -18,16 +18,16 @@ exports.getObjectiveHistory = async function (req, res) {
 };
 
 exports.createObjectiveHistory = function (req, res) {
-  var token = jwt.decode(req.body.token);
-  var stock_ok = req.body.objectstock;
-  var nowDate = req.body.nowDate;
-  var objectiveHistory = [];
+  let token = jwt.decode(req.body.token);
+  let stock_ok = req.body.objectstock;
+  let nowDate = req.body.nowDate;
+  let objectiveHistory = [];
 
   req.body.data.map((item) => {
     if (item.value === undefined) {
-      var value = 0;
+      let value = 0;
       if (item.reason === undefined) {
-        var reason = "";
+        let reason = "";
       }
       objectiveHistory = new ObjectiveHistory({
         userid: token.id,
@@ -70,7 +70,7 @@ exports.createObjectiveHistory = function (req, res) {
         max: item.max,
         accept: item.accept,
       }).then((history) => {
-        var value = 0;
+        let value = 0;
         if (!history) {
           if (item.value !== "") {
             value = item.value;
@@ -110,7 +110,7 @@ exports.createObjectiveHistory = function (req, res) {
         }
       });
     } else {
-      var value = 0;
+      let value = 0;
       if (item.value !== "") {
         value = item.value;
       }

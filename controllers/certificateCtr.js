@@ -23,9 +23,9 @@ exports.AddCertificate = function (req, res) {
       certificatetitle: req.body.certificatetitle,
       date_format: req.body.date_format,
     })
-      .save()
-      .then((e) => res.json(e))
-      .catch((err) => console.log(err));
+    .save()
+    .then((e) => res.json(e))
+    .catch((err) => console.log(err));
   } else {
     CertificateModel.findById(req.body.rowid)
       .then((e) => {

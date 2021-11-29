@@ -1,7 +1,8 @@
-var User = require("../models/users");
-var UserType = require("../models/userTypes");
-var jwt = require("jsonwebtoken");
-var CSV = require("csv-string");
+const User = require("../models/users");
+const UserType = require("../models/userTypes");
+const jwt = require("jsonwebtoken");
+const CSV = require("csv-string");
+const bcrypt = require('bcrypt')
 
 exports.getToken = async function (req, res) {
   const token = req.body.token;
@@ -15,11 +16,36 @@ exports.getToken = async function (req, res) {
   return res.json(token);
 };
 
-exports.getAllUsers = async function (req, res) {
+exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.aggregate([
+      {
+        $lookup: {
+          from: 'usertypes',
+          localField: 'userType',
+          foreignField: '_id',
+          as: 'userType'
+        }
+      },
+      {
+        $unwind: '$userType'
+      },
+      {
+        $project: {
+          user_id: 1,
+          userName: 1,
+          email: 1,
+          password: 1,
+          user_type: '$userType.userType',
+          remark: 1,
+        }
+      }
+    ])
     const userTypes = await UserType.find();
-    res.send({ users, userTypes });
+    return res.json({
+      users: users,
+      userTypes: userTypes
+    })
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
@@ -28,11 +54,18 @@ exports.getAllUsers = async function (req, res) {
 exports.loginUser = async function (req, res) {
   const { userName, password } = req.body;
   try {
+    let errors = {}
     let user = await User.findOne({ userName: userName });
+    if (!user) {
+      errors.userName = "User not found"
+      return res.status(404).json(errors)
+    }
     let usertype_search = await UserType.findOne({ _id: user.userType });
 
-    if (user.password != password) {
-      res.status(400).json("incorrect password");
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      errors.password = "Incorrect username or password"
+      return res.status(400).json(errors);
     }
 
     const payload = {
@@ -50,14 +83,18 @@ exports.loginUser = async function (req, res) {
       geologyAdmin: usertype_search.geologyAdmin,
       remark: usertype_search.remark,
     };
-    jwt.sign(payload, "secret", { expiresIn: "1h" }, (err, token) => {
+    jwt.sign(payload, "secret", { expiresIn: 86400 }, (err, token) => {
       if (err) throw err;
-      res.json({ token });
+      return res.json({
+        success: true,
+        token: 'Bearer ' + token
+      });
     });
   } catch (err) {
     res.status(500).send("Server error");
   }
 };
+
 exports.createUser = async function (req, res) {
   if (
     req.body === undefined ||
@@ -67,7 +104,8 @@ exports.createUser = async function (req, res) {
     res.status(400).send({ message: "User name can not be empty!" });
     return;
   }
-  var user = new User({
+  let user = new User({
+    user_id: req.body.user_id,
     auto_id: req.body.user_id,
     userName: req.body.userName,
     email: req.body.email,
@@ -78,10 +116,35 @@ exports.createUser = async function (req, res) {
 
   try {
     await user.save();
-    const users = await User.find();
+    const users = await User.aggregate([
+      {
+        $lookup: {
+          from: 'usertypes',
+          localField: 'userType',
+          foreignField: '_id',
+          as: 'userType'
+        }
+      },
+      {
+        $unwind: '$userType'
+      },
+      {
+        $project: {
+          user_id: 1,
+          userName: 1,
+          email: 1,
+          password: 1,
+          user_type: '$userType.userType',
+          remark: 1,
+        }
+      }
+    ])
     const userTypes = await UserType.find();
 
-    res.send({ users, userTypes });
+    res.json({
+      users: users,
+      userTypes: userTypes
+    });
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
@@ -93,16 +156,18 @@ exports.updateUser = async function (req, res) {
     return;
   }
 
-  var id = req.body.id;
+  let id = req.body.id;
 
   try {
+    const typeData = await UserType.findOne({ userType: req.body.userType })
+    const userType = typeData._id
     const data = await User.findByIdAndUpdate(
       id,
       {
         userName: req.body.userName,
         email: req.body.email,
         password: req.body.password,
-        userType: req.body.userType,
+        userType: userType,
         remark: req.body.remark,
       },
       { useFindAndModify: false }
@@ -112,10 +177,34 @@ exports.updateUser = async function (req, res) {
         message: `Cannot update object with id = ${id}. Maybe object was not found!`,
       });
     else {
-      const users = await User.find();
+      const users = await User.aggregate([
+        {
+          $lookup: {
+            from: 'usertypes',
+            localField: 'userType',
+            foreignField: '_id',
+            as: 'userType'
+          }
+        },
+        {
+          $unwind: '$userType'
+        },
+        {
+          $project: {
+            user_id: 1,
+            userName: 1,
+            email: 1,
+            password: 1,
+            user_type: '$userType.userType',
+            remark: 1,
+          }
+        }
+      ])
       const userTypes = await UserType.find();
-
-      res.send({ users, userTypes });
+      return res.json({
+        users: users,
+        userTypes: userTypes
+      })
     }
   } catch (err) {
     res.status(500).send({ message: err.message });
@@ -128,7 +217,7 @@ exports.deleteUser = async function (req, res) {
     return;
   }
 
-  var id = req.body.id;
+  let id = req.body.id;
 
   try {
     const data = await User.findByIdAndRemove(id, { useFindAndModify: false });
@@ -137,15 +226,40 @@ exports.deleteUser = async function (req, res) {
         message: `Cannot update object with id = ${id}. Maybe object was not found!`,
       });
     else {
-      const users = await User.find();
+      const users = await User.aggregate([
+        {
+          $lookup: {
+            from: 'usertypes',
+            localField: 'userType',
+            foreignField: '_id',
+            as: 'userType'
+          }
+        },
+        {
+          $unwind: '$userType'
+        },
+        {
+          $project: {
+            user_id: 1,
+            userName: 1,
+            email: 1,
+            password: 1,
+            user_type: '$userType.userType',
+            remark: 1,
+          }
+        }
+      ])
       const userTypes = await UserType.find();
-
-      res.send({ users, userTypes });
+      return res.json({
+        users: users,
+        userTypes: userTypes
+      })
     }
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
 };
+
 exports.uploadUserCSV = async function (req, res) {
   if (req.body === undefined) {
     res.status(400).send({ message: "User CSV can not be empty!" });
@@ -153,8 +267,8 @@ exports.uploadUserCSV = async function (req, res) {
   }
   const parsedCSV = CSV.parse(req.body.data);
   try {
-    for (var i = 1; i < parsedCSV.length; i++) {
-      var aCSV = parsedCSV[i];
+    for (let i = 1; i < parsedCSV.length; i++) {
+      let aCSV = parsedCSV[i];
       const userTypes = await UserType.findOne({ userType: aCSV[4] });
       // console.log(userTypes);
       if (userTypes._id != undefined) {

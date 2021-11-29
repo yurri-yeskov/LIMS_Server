@@ -6,7 +6,7 @@ let certificateType = new Schema(
   {
     certificateType_id: { type: String },
     material: { type: String },
-    client: { type: String },
+    client: { type: mongoose.Types.ObjectId, ref: 'clients' },
     certificateType: { type: String },
     analysises: { type: Array },
     packing: { type: String },

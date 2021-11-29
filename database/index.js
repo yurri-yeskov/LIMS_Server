@@ -1,8 +1,8 @@
 
-var mongoose = require("mongoose");
-var logger = require('node-color-log');
+const mongoose = require("mongoose");
+const logger = require('node-color-log');
 
-var config = require('../config.js');
+const config = require('../config.js');
 const db =  config.MongoUri;
 
 exports.init = function() {

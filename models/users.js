@@ -2,17 +2,33 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-let user = new Schema(
-  {
-    user_id: { type: String },
-    auto_id: { type: String },
-    userName: { type: String },
-    email: { type: String },
-    password: { type: String },
-    userType: { type: Schema.Types.ObjectId, ref: "userTypes" },
-    remark: { type: String },
+const userSchema = new Schema({
+  user_id: {
+    type: String,
+    default: ''
   },
-  { collection: "users" }
-);
+  auto_id: {
+    type: String
+  },
+  userName: {
+    type: String,
+    require: true
+  },
+  email: {
+    type: String,
+    require: true
+  },
+  password: {
+    type: String,
+    require: true
+  },
+  userType: {
+    type: Schema.Types.ObjectId,
+    ref: 'userTypes'
+  },
+  remark: {
+    type: String
+  }
+})
 
-module.exports = User = mongoose.model("users", user);
+module.exports = User = mongoose.model("users", userSchema);

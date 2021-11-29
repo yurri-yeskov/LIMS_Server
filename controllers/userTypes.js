@@ -1,15 +1,10 @@
+const User = require('../models/users');
+const UserType = require('../models/userTypes');
+const CSV = require('csv-string');
 
-var User = require('../models/users');
-var UserType = require('../models/userTypes');
-var CSV = require('csv-string');
-
-exports.getAllUserTypes = function(req, res) {
-    UserType.find().then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({ message: err.message });
-    });
+exports.getAllUserTypes = async (req, res) => {
+  const types = await UserType.find();
+  return res.json(types);
 }
 
 exports.createUserType = function(req, res) {
@@ -18,7 +13,7 @@ exports.createUserType = function(req, res) {
         return;
     }
 
-    var userType = new UserType({
+    let userType = new UserType({
         userType_id: req.body.userType_id,
         userType: req.body.userType,
         labInput: req.body.labInput,
@@ -51,7 +46,7 @@ exports.updateUserType = function(req, res) {
       return;
     }
 
-    var id = req.body.id;
+    let id = req.body.id;
 
     UserType.findByIdAndUpdate(id, {
       userType_id: req.body.userType_id,
@@ -87,14 +82,14 @@ exports.deleteUserType = async function(req, res) {
         res.status(400).send({ message: "UserType id can not be empty!" });
         return;
     }
-    var id = req.body.id;
+    let id = req.body.id;
     try {
       const data = await UserType.findByIdAndRemove(id, { useFindAndModify: false });
       if (!data)
         res.status(404).send({ message: `Cannot delete object with id = ${id}. Maybe object was not found!` });
       else {
         const users = await User.find({userType: id});
-        for (var i = 0; i < users.length; i ++) {
+        for (let i = 0; i < users.length; i ++) {
           await User.findByIdAndRemove(users[i]._id, { useFindAndModify: false });
         }
 
@@ -109,8 +104,8 @@ exports.deleteUserType = async function(req, res) {
 exports.uploadUserTypeCSV = async function(req, res){
   const parsedCSV = CSV.parse(req.body.data);
   try{
-    for (var i = 1; i < parsedCSV.length; i ++) {
-      var aCSV = parsedCSV[i];
+    for (let i = 1; i < parsedCSV.length; i ++) {
+      let aCSV = parsedCSV[i];
       let query = { userType_id: aCSV[0] };
       if(aCSV[2] === ''){
         aCSV[2] = false;

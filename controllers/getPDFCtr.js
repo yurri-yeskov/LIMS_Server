@@ -1,12 +1,12 @@
-var ClientModel = require("../models/clients");
-var AnalyModel = require("../models/analysisTypes");
-var Labo = require("../models/inputLaboratory");
-var ObjModel = require("../models/objectives");
-var UnitsModel = require("../models/units");
-var HistoryModel = require("../models/objectiveHistory");
-var UserModel = require("../models/users");
-var CerModel = require("../models/certificateTypes");
-var moment = require("moment");
+const ClientModel = require("../models/clients");
+const AnalyModel = require("../models/analysisTypes");
+const Labo = require("../models/inputLaboratory");
+const ObjModel = require("../models/objectives");
+const UnitsModel = require("../models/units");
+const HistoryModel = require("../models/objectiveHistory");
+const UserModel = require("../models/users");
+const CerModel = require("../models/certificateTypes");
+const moment = require("moment");
 
 exports.getaddress = function (req, res) {
   ClientModel.findById(req.body.id)
@@ -21,7 +21,7 @@ exports.getanaldata = async function (req, res) {
   let data = [];
   await Promise.all(
     req.body.productdata.map(async (v, i) => {
-      var obj = { name: v.name, value: "" };
+      let obj = { name: v.name, value: "" };
       if (v.pagename == 0) {
         await Labo.findById(req.body.rowid)
           .then((e) => {
@@ -35,13 +35,13 @@ exports.getanaldata = async function (req, res) {
               else if (v.fieldname == "Packing Type")
                 obj.value = e.packing_type;
               else if (v.fieldname == "Analysis Type") {
-                var atypesvalue = "";
+                let atypesvalue = "";
                 e.a_types.map((item) => {
                   atypesvalue += "," + item;
                 });
                 obj.value = atypesvalue.substr(1, atypesvalue.length);
               } else if (v.fieldname == "Certificate") {
-                var ctypesvalue = "";
+                let ctypesvalue = "";
                 e.c_types.map((item) => {
                   ctypesvalue += "," + item;
                 });
@@ -51,20 +51,20 @@ exports.getanaldata = async function (req, res) {
               else if (v.fieldname == "Sample Date")
                 obj.value = moment(e.sample_date).format(req.body.dateformat);
               else if (v.fieldname == "Weight(actual)") {
-                var wei = "";
+                let wei = "";
                 e.Weight.map((item) => {
                   wei += "," + item.weight;
                 });
                 obj.value = wei.substr(1, wei.length);
-                var arr = obj.value.split(",");
+                let arr = obj.value.split(",");
                 obj.value = arr[arr.length - 1];
               } else if (v.fieldname == "Charge") {
-                var chargee = "";
+                let chargee = "";
                 e.Charge.map((item) => {
                   chargee += "," + item.charge;
                 });
                 obj.value = chargee.substr(1, chargee.length);
-                var arr = obj.value.split(",");
+                let arr = obj.value.split(",");
                 obj.value = arr[arr.length - 1];
               } else if (v.fieldname == "Remark") obj.value = e.remark;
               else if (v.fieldname == "Delivering.Address.Name1") {
@@ -272,7 +272,7 @@ exports.gethistorydata = async function (req, res) {
     filter_data.map(async (anal) => {
       await Promise.all(
         allhis.map(async (e) => {
-          var rowdata = {};
+          let rowdata = {};
           if (
             anal.label == e.label &&
             anal.value == e.obj_value &&
@@ -280,7 +280,7 @@ exports.gethistorydata = async function (req, res) {
             anal.max == e.max &&
             anal.unit_id == e.unit
           ) {
-            var variable_analdata = "";
+            let variable_analdata = "";
             variable_analdata = e.analysis;
             await Promise.all(
               data.map(async (ev) => {
@@ -293,7 +293,7 @@ exports.gethistorydata = async function (req, res) {
                   rowdata[ev.name] = e.limitValue;
                 } else if (ev.fieldname == 2) {
                   //author
-                  var author = "";
+                  let author = "";
                   await UserModel.findById(e.userid)
                     .then(async (et) => {
                       await (author = et.userName);
@@ -308,7 +308,7 @@ exports.gethistorydata = async function (req, res) {
                   rowdata[ev.name] = e.reason ? e.reason : "";
                 } else if (ev.fieldname == 5) {
                   //spec
-                  var str = "";
+                  let str = "";
                   await Promise.all(
                     req.body.rowObj.map(async (item) => {
                       await CerModel.findOne({
@@ -345,7 +345,7 @@ exports.gethistorydata = async function (req, res) {
                     : "";
                 } else if (ev.fieldname == 8) {
                   // AnalysisTypes-Objective
-                  var str = "";
+                  let str = "";
                   await Promise.all(
                     req.body.rowObj.map(async (item) => {
                       await CerModel.findOne({
@@ -362,7 +362,7 @@ exports.gethistorydata = async function (req, res) {
                                   v.unit === item.unit_id &&
                                   item.analysis === e.analysis
                                 ) {
-                                  var unit = "";
+                                  let unit = "";
                                   if (v.unit == item.unit_id) {
                                     unit = item.unit;
                                   }
@@ -377,8 +377,8 @@ exports.gethistorydata = async function (req, res) {
                   );
                   rowdata[ev.name] = str;
                 } else if (ev.fieldname == 9) {
-                  var str = "";
-                  var sub_str = [];
+                  let str = "";
+                  let sub_str = [];
                   await Promise.all(
                     analdata.map(async (v) => {
                       await AnalyModel.findOne({ analysisType: v })
@@ -392,7 +392,7 @@ exports.gethistorydata = async function (req, res) {
                         .catch((err) => console.log(err));
                     })
                   );
-                  var res_str = sub_str.filter((item) => item !== "");
+                  let res_str = sub_str.filter((item) => item !== "");
                   rowdata[ev.name] = res_str;
                 }
               })

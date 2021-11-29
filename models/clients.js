@@ -2,28 +2,27 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-let client = new Schema(
+const clientSchema = new Schema(
   {
-    name: { type: String },
-    clientId: { type: String },
-    other: { type: String },
-    countryL: { type: String },
-    countryB: { type: String },
-    zipCodeL: { type: String },
-    zipCodeB: { type: String },
-    cityL: { type: String },
-    cityB: { type: String },
-    addressL: { type: String },
-    address2L: { type: String },
-    addressB: { type: String },
-    address2B: { type: String },
-    email: { type: String },
-    email2: { type: String },
-    email3: { type: String },
-    remark1: { type: String },
-    remark2: { type: String }
-  },
-  { collection: "clients" }
+    name: { type: String, default: '' },
+    clientId: { type: String, default: '' },
+    other: { type: String, default: '' },
+    countryL: { type: String, default: '' },
+    countryB: { type: String, default: '' },
+    zipCodeL: { type: String, default: '' },
+    zipCodeB: { type: String, default: '' },
+    cityL: { type: String, default: '' },
+    cityB: { type: String, default: '' },
+    addressL: { type: String, default: '' },
+    address2L: { type: String, default: '' },
+    addressB: { type: String, default: '' },
+    address2B: { type: String, default: '' },
+    email: { type: String, default: '' },
+    email2: { type: String, default: '' },
+    email3: { type: String, default: '' },
+    remark1: { type: String, default: '' },
+    remark2: { type: String, default: '' }
+  }
 );
 
-module.exports = mongoose.model("clients", client);
+module.exports = Client = mongoose.model("clients", clientSchema);

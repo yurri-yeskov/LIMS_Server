@@ -1,5 +1,5 @@
-var Reason = require("../models/reasonModel");
-var CSV = require('csv-string');
+const Reason = require("../models/reasonModel");
+const CSV = require('csv-string');
 
 exports.getAllReason = function (req, res) {
   Reason.find()
@@ -21,7 +21,7 @@ exports.createReason = function (req, res) {
     return;
   }
 
-  var reason = new Reason({
+  let reason = new Reason({
     reason_id: req.body.reason_id,
     reason: req.body.reason,
     remark: req.body.remark,
@@ -45,7 +45,7 @@ exports.updateReason = function (req, res) {
     return;
   }
 
-  var id = req.body.id;
+  let id = req.body.id;
 
   Reason.findByIdAndUpdate(
     id,
@@ -80,7 +80,7 @@ exports.deleteReason = function (req, res) {
     return;
   }
 
-  var id = req.body.id;
+  let id = req.body.id;
 
   Reason.findByIdAndRemove(id, { useFindAndModify: false })
     .then((data) => {
@@ -107,8 +107,8 @@ exports.uploadReasonCSV = async function(req, res){
   }
   const parsedCSV = CSV.parse(req.body.data);
   try{
-    for (var i = 1; i < parsedCSV.length; i ++) {
-      var aCSV = parsedCSV[i];
+    for (let i = 1; i < parsedCSV.length; i ++) {
+      let aCSV = parsedCSV[i];
         let query = { reason_id: aCSV[0] };
         let update = {
           reason:aCSV[1],

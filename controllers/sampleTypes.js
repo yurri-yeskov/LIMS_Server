@@ -1,14 +1,13 @@
-var SampleType = require("../models/sampleTypes");
-var CSV = require("csv-string");
+const SampleType = require("../models/sampleTypes");
+const CSV = require("csv-string");
 
-exports.getAllSampleTypes = function (req, res) {
-  SampleType.find()
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({ message: err.message });
-    });
+exports.getAllSampleTypes = async (req, res) => {
+  try {
+    const types = await SampleType.find()
+    return res.json(types)
+  } catch (err) {
+    return res.status(500).json({message: 'Fetch data failed'})
+  }
 };
 
 exports.createSampleType = function (req, res) {
@@ -21,7 +20,7 @@ exports.createSampleType = function (req, res) {
     return;
   }
 
-  var sampleType = new SampleType({
+  let sampleType = new SampleType({
     sampleType: req.body.sampleType,
     sampleType_id: req.body.sampleType_id,
     stockSample: req.body.stockSample,
@@ -56,7 +55,7 @@ exports.updateSampleType = function (req, res) {
     return;
   }
 
-  var id = req.body.id;
+  let id = req.body.id;
 
   SampleType.findByIdAndUpdate(
     id,
@@ -102,7 +101,7 @@ exports.deleteSampleType = function (req, res) {
     return;
   }
 
-  var id = req.body.id;
+  let id = req.body.id;
 
   SampleType.findByIdAndRemove(id, { useFindAndModify: false })
     .then((data) => {
@@ -125,8 +124,8 @@ exports.deleteSampleType = function (req, res) {
 exports.uploadSampleTypeCSV = async function (req, res) {
   const parsedCSV = CSV.parse(req.body.data);
   try {
-    for (var i = 1; i < parsedCSV.length; i++) {
-      var aCSV = parsedCSV[i];
+    for (let i = 1; i < parsedCSV.length; i++) {
+      let aCSV = parsedCSV[i];
       let query = { sampleType_id: aCSV[0] };
       if (aCSV[2] === "") {
         aCSV[2] = false;

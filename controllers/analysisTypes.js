@@ -1,10 +1,47 @@
+const AnalysisType = require('../models/analysisTypes');
+const Objective = require('../models/objectives');
+const Unit = require('../models/units');
+const CSV = require('csv-string');
 
-var AnalysisType = require('../models/analysisTypes');
-var Objective = require('../models/objectives');
-var Unit = require('../models/units');
-var CSV = require('csv-string');
 exports.getAllAnalysisTypes = async function(req, res) {
   try {
+    // const analysisTypes = await AnalysisType.aggregate([
+    //   {
+    //     $lookup: {
+    //       from: 'objectives',
+    //       localField: 'objectives.id',
+    //       foreignField: '_id',
+    //       as: 'objectives_data'
+    //     }
+    //   },
+    //   {
+    //     $unwind: '$objectives_data'
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: 'units',
+    //       localField: 'objectives.unit',
+    //       foreignField: '_id',
+    //       as: 'units_data'
+    //     }
+    //   },
+    //   {
+    //     $unwind: '$units_data'
+    //   },
+    //   {
+    //     $project: {
+    //       _id: 1,
+    //       analysisType_id: 1,
+    //       analysisType: 1,
+    //       norm: 1,
+    //       remark: 1,
+    //       objective_id: '$objectives_data._id',
+    //       objective: '$objectives_data.objective',
+    //       unit_id: '$units_data._id',
+    //       unit: '$units_data.unit'
+    //     }
+    //   },
+    // ])
     const analysisTypes = await AnalysisType.find();
     const objectives = await Objective.find();
     const units = await Unit.find();
@@ -21,7 +58,7 @@ exports.createAnalysisType = async function(req, res) {
         return;
     }
 
-    var analysisType = new AnalysisType({
+    let analysisType = new AnalysisType({
         analysisType_id: req.body.analysisType_id,
         analysisType: req.body.analysisType,
         norm: req.body.norm,
@@ -47,7 +84,7 @@ exports.updateAnalysisType = async function(req, res) {
       return;
     }
 
-    var id = req.body.id;
+    let id = req.body.id;
     
     try {
       const data = await AnalysisType.findByIdAndUpdate(id, {
@@ -77,7 +114,7 @@ exports.deleteAnalysisType = async function(req, res) {
         return;
     }
 
-    var id = req.body.id;
+    let id = req.body.id;
 
     try {
       const data = await AnalysisType.findByIdAndRemove(id, { useFindAndModify: false })
@@ -102,15 +139,15 @@ exports.uploadAnalysisTypeCSV = async function(req, res){
   const parsedCSV = CSV.parse(req.body.data);
 
   try{
-    for (var i = 1; i < parsedCSV.length; i ++) {
-      var aCSV = parsedCSV[i];
-      var objective_data = [];
+    for (let i = 1; i < parsedCSV.length; i ++) {
+      let aCSV = parsedCSV[i];
+      let objective_data = [];
       if(aCSV[3] != ''){
-        var objectives = aCSV[3].split('\n');
-        for(var j = 0; j < objectives.length-1;j++){
-          var temp = objectives[j].split(' ');
-          var one_objective = await Objective.findOne({objective:temp[0]});
-          var one_unit = await Unit.findOne({unit:temp[1]});
+        let objectives = aCSV[3].split('\n');
+        for(let j = 0; j < objectives.length-1;j++){
+          let temp = objectives[j].split(' ');
+          let one_objective = await Objective.findOne({objective:temp[0]});
+          let one_unit = await Unit.findOne({unit:temp[1]});
           objective_data.push({id:one_objective._id, unit:one_unit._id});
         }
       }

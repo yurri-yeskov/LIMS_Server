@@ -6,7 +6,10 @@ let objective = new Schema(
   {
     objective_id: { type: String },
     objective: { type: String },
-    units: { type: Array },
+    units: [{
+      type: Schema.Types.ObjectId,
+      ref: 'units'
+    }],
     remark: { type: String }
   },
   { collection: "objectives" }
