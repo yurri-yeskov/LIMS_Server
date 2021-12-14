@@ -6,8 +6,8 @@ let Reason = new Schema(
   {
     name: { type: String },
     company: { type: String },
-    logo: { type: Object },
-    footer: { type: Object },
+    // logo: { type: Object },
+    // footer: { type: Object },
     productdata: {
       productTitle: {
         type: String,
@@ -27,6 +27,14 @@ let Reason = new Schema(
     footerUid: { type: String },
     certificatetitle: { type: String },
     date_format: { type: String },
+    logo_filename: {
+      type: String,
+      default: ''
+    },
+    footer_filename: {
+      type: String,
+      default: ''
+    }
   },
   { collection: "certificates" }
 );

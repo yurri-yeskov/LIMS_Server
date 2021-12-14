@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const path = require('path')
 const bcrypt = require('bcrypt')
 const passport = require('passport')
+const fileupload = require('express-fileupload');
 
 const database = require("./database");
 const router = require("./router");
@@ -14,6 +15,11 @@ const UserType = require("./models/userTypes");
 const UserRoute = require('./router/User.Route')
 const MaterialRoute = require('./router/Material.Route')
 const InputLaboratoryRoute = require('./router/InputLab.Route')
+const WeightRoute = require('./router/Weight.Route')
+const ChargeRoute = require('./router/Charge.Route')
+const AnalysisRoute = require('./router/Analysis.Route')
+const ClientRoute = require('./router/Client.Route')
+const CertificateRoute = require('./router/Certificate.Route')
 
 const express = require("express");
 
@@ -23,6 +29,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use(bodyParser.json());
+
+app.use(fileupload());
 
 database.init();
 
@@ -36,12 +44,17 @@ require("./config/passport")(passport);
 app.use('/api/users/', UserRoute)
 app.use('/api/materials', MaterialRoute)
 app.use('/api/inputLabs', InputLaboratoryRoute)
+app.use('/api/weights', WeightRoute)
+app.use('/api/charges', ChargeRoute)
+app.use('/api/analysis', AnalysisRoute)
+app.use('/api/clients', ClientRoute)
+app.use('/api/certificates', CertificateRoute)
 
 const server = require("http").createServer(app);
 
-app.get('/uploads/:filename', async (req, res) => {
+app.get('/uploads/certificates/:filename', async (req, res) => {
   const filename = req.params.filename;
-  res.sendFile(path.join(__dirname, './uploads/' + filename));
+  res.sendFile(path.join(__dirname, './uploads/certificates/' + filename));
 })
 
 

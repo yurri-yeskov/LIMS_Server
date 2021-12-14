@@ -73,6 +73,7 @@ exports.loginUser = async function (req, res) {
       userType: usertype_search.userType,
       labInput: usertype_search.labInput,
       labAnalysis: usertype_search.labAnalysis,
+      labAdmin: usertype_search.labAdmin,
       stockUser: usertype_search.stockUser,
       stockAdmin: usertype_search.stockAdmin,
       hsImport: usertype_search.hsImport,

@@ -49,6 +49,10 @@ const deliverySchema = new Schema({
     posId: {
         type: String,
         default: ''
+    },
+    w_target: {
+        type: Number,
+        default: 0
     }
 })
 

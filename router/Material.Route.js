@@ -4,6 +4,7 @@ const AnalysisTypes = require('../models/analysisTypes')
 const Objective = require('../models/objectives');
 const Unit = require('../models/units');
 const Client = require('../models/clients');
+const CertificateType = require('../models/certificateTypes')
 const CSV = require('csv-string');
 const router = express.Router()
 
@@ -60,7 +61,8 @@ router.get('/', async (req, res) => {
 
 router.get('/clients/:id', async (req, res) => {
     const material = await Material.findById(req.params.id).populate('clients')
-    return res.json(material.clients)
+    const certTypes = await CertificateType.find({ material: req.params.id })
+    return res.json({ material: material, certTypes: certTypes })
 })
 
 module.exports = router;

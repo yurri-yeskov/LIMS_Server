@@ -58,14 +58,71 @@ const inputLabSchema = new Schema({
         type: Number,
         default: 0
     },
-    charge: {
+    weight_comment: {
+        type: String,
+        default: ''
+    },
+    charge: [{
+        date: {
+            type: Date
+        },
+        comment: {
+            type: String,
+            default: ''
+        }
+    }],
+    material_left: {
         type: Number,
         default: 0
     },
     delivery: {
         type: mongoose.Types.ObjectId,
         ref: 'deliveries'
-    }
+    },
+    aT_validate: [{
+        aType: {
+            type: mongoose.Types.ObjectId,
+            ref: 'analysisTypes'
+        },
+        isValid: {
+            type: Number,
+            default: 0          // 0: not inputed or missed part, 1: validate good, 2: validate: bad
+        }
+    }],
+    stock_specValues: [{
+        histId: {
+            type: mongoose.Types.ObjectId,
+            ref: 'analysisinputhistories'
+        },
+        stock: {
+            type: mongoose.Types.ObjectId,
+            ref: 'inputlabs'
+        },
+        material: {
+            type: mongoose.Types.ObjectId,
+            ref: 'materials'
+        },
+        client: {
+            type: mongoose.Types.ObjectId,
+            ref: 'clients'
+        },
+        aType: {
+            type: mongoose.Types.ObjectId,
+            ref: 'analysisTypes'
+        },
+        isValid: {
+            type: Number,
+            default: 0
+        },
+        obj: {
+            type: String,
+            default: ''
+        },
+        value: {
+            type: Number,
+            default: 0
+        }
+    }]
 })
 
 module.exports = inputLab = mongoose.model('inputlabs', inputLabSchema)

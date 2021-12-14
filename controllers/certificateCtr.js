@@ -1,4 +1,6 @@
 const CertificateModel = require("../models/certificateModel");
+const fs = require('fs')
+const path = require('path')
 
 exports.getCertificate = function (req, res) {
   CertificateModel.find()
@@ -10,8 +12,35 @@ exports.getCertificate_dateformat = function (req, res) {
     .then((e) => res.json(e))
     .catch((err) => console.log(err));
 };
+
 exports.AddCertificate = function (req, res) {
+  console.log(">>>>>>>>>>>>>>>>>>", req.body.rowid)
+  console.log("<<<<<<<<<<<<<<<<<<", req.files)
+  return;
   if (req.body.rowid === "") {
+    const uploadPath = path.join(__dirname, `../uploads/certificates`);
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdir(uploadPath, (err) => {
+        if (err) {
+          return console.error(err);
+        }
+      });
+    }
+
+    const file = req.files.files;
+    console.log(file)
+    if (file instanceof Array) {
+      file.forEach(f => {
+        console.log(f)
+        const filename = f.filename;
+        f.mv(`${uploadPath}/${filename}`);
+      });
+    } else {
+      console.log(file)
+      const filename = file.filename;
+      file.mv(`${uploadPath}/${filename}`);
+    }
+
     new CertificateModel({
       name: req.body.name,
       company: req.body.company,
@@ -23,10 +52,38 @@ exports.AddCertificate = function (req, res) {
       certificatetitle: req.body.certificatetitle,
       date_format: req.body.date_format,
     })
-    .save()
-    .then((e) => res.json(e))
-    .catch((err) => console.log(err));
+      .save()
+      .then((e) => res.json(e))
+      .catch((err) => console.log(err));
   } else {
+    const certData = CertificateModel.findById(req.body.rowid)
+
+    const uploadPath = path.join(__dirname, `../uploads/certificates`);
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdir(uploadPath, (err) => {
+        if (err) {
+          return console.error(err);
+        }
+      });
+    }
+
+    fs.unlinkSync(`${uploadPath}/${certData.logo.filename}`)
+    fs.unlinkSync(`${uploadPath}/${certData.footer.filename}`)
+
+    const file = req.files.files;
+    console.log(file)
+    if (file instanceof Array) {
+      file.forEach(f => {
+        console.log(f)
+        const filename = f.filename;
+        f.mv(`${uploadPath}/${filename}`);
+      });
+    } else {
+      console.log(file)
+      const filename = file.filename;
+      file.mv(`${uploadPath}/${filename}`);
+    }
+
     CertificateModel.findById(req.body.rowid)
       .then((e) => {
         if (e) {
@@ -89,16 +146,13 @@ exports.DelCertificate = function (req, res) {
     .then((e) => res.json(e))
     .catch((err) => console.log(err));
 };
-exports.Upproductdata = function (req, res) {
-  CertificateModel.findById(req.body.rowid)
-    .then((e) => {
-      e.productdata.productData = req.body.data;
-      e.productdata.productTitle = req.body.title;
-      e.save()
-        .then((r) => res.json(r))
-        .catch((err) => console.log(err));
-    })
-    .catch((err) => console.log(err));
+exports.Upproductdata = async function (req, res) {
+  console.log(req.body)
+  const certificate = await CertificateModel.findById(req.body.rowid)
+  certificate.productdata.productData = req.body.data;
+  certificate.productdata.productTitle = req.body.title;
+  await certificate.save()
+  return res.json({ certificate })
 };
 exports.UpFreetext = function (req, res) {
   CertificateModel.findById(req.body.rowid)

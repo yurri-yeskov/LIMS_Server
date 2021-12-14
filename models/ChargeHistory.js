@@ -14,6 +14,10 @@ const chargeSchema = new Schema({
         type: Date,
         default: Date.now()
     },
+    chargeDate: {
+        type: Date,
+        default: Date.now()
+    },
     comment: {
         type: String,
         default: ''

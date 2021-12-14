@@ -100,7 +100,7 @@ exports.init = function (app) {
   app.post("/create_input_laboratory", InputLaboratoryController.createInputLaboratory);
   app.post("/update_input_laboratory", InputLaboratoryController.updateInputLaboratory);
   app.get("/get_all_input_laboratory", InputLaboratoryController.getAllData);
-  app.post("/delete_input_laboratory",InputLaboratoryController.deleteInputLaboratory);
+  app.post("/delete_input_laboratory", InputLaboratoryController.deleteInputLaboratory);
   app.post("/upload_laboratory_csv", InputLaboratoryController.uploadLaboratoryCSV);
   app.post("/add_weight", InputLaboratoryController.addWeight);
   app.post("/add_charge", InputLaboratoryController.addCharge);

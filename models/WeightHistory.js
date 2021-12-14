@@ -14,6 +14,10 @@ const weightSchema = new Schema({
         type: Date,
         default: Date.now()
     },
+    weight: {
+        type: Number,
+        default: 0
+    },
     comment: {
         type: String,
         default: ''
