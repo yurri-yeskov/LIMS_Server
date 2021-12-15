@@ -26,6 +26,7 @@ router.get('/', async (req, res) => {
     const packingTypes = await PackingType.find()
     const analysisTypes = await AnalysisType.find()
     const certificateTypes = await CertificateType.find()
+    const defaultClient = await Client.findOne({ name: 'Default' })
 
     return res.json({
         inputLabs: inputLabs,
@@ -33,7 +34,8 @@ router.get('/', async (req, res) => {
         materials: materials,
         packingTypes: packingTypes,
         analysisTypes: analysisTypes,
-        certificateTypes: certificateTypes
+        certificateTypes: certificateTypes,
+        defaultClient: defaultClient
     })
 })
 
@@ -82,7 +84,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
 
         return res.json(inputLabs)
     } catch (err) {
-        console.log(err)
+        // console.log(err)
         return res.status(500).json({ message: "Server does not working correctly" })
     }
 })
@@ -176,7 +178,7 @@ router.post('/saveStockSample', passport.authenticate('jwt', { session: false })
             }
 
             inputLab.material_left = inputLab.material_left - data[i].weight
-            // await inputLab.save()
+            await inputLab.save()
         }
         const lab = await InputLab.findById(selectedId)
 
@@ -275,22 +277,54 @@ router.post('/saveStockSample', passport.authenticate('jwt', { session: false })
 })
 
 router.post("/analysisTypes", passport.authenticate("jwt", { session: false }), async (req, res) => {
-    const { labId, analysisId } = req.body
+    const { labStockId, labRowId, analysisId } = req.body
     const reasons = await Reason.find()
     const objectives = await Objective.find()
     const units = await Unit.find()
-    const inputLab = await InputLab.findById(labId)
+    const inputLab = await InputLab.findById(labStockId)
     const material = await Material.findById(inputLab.material)
     const filteredObjs = material.objectiveValues.filter(data => String(data.client) === String(inputLab.client) && String(data.analysis) === String(analysisId))
     let histories = []
-    for (let i = 0; i < filteredObjs.length; i++) {
-        const latestHistory = await AnalysisInputHistory.find({
-            labId: labId,
-            analysisId: analysisId,
-            obj: filteredObjs[i].id + "-" + filteredObjs[i].unit
-        }).populate(['user']).sort({ date: -1 })
-        if (latestHistory.length > 0) {
-            histories.push(latestHistory)
+    if (labStockId === labRowId) {
+        for (let i = 0; i < filteredObjs.length; i++) {
+            const latestHistory = await AnalysisInputHistory.find({
+                labId: labStockId,
+                analysisId: analysisId,
+                obj: filteredObjs[i].id + "-" + filteredObjs[i].unit
+            }).populate(['user']).sort({ date: -1 })
+            if (latestHistory.length > 0) {
+                histories.push(latestHistory)
+            }
+        }
+    } else {
+        const rowData = await InputLab.findById(labRowId)
+        const specValues = rowData.stock_specValues.filter(sv => String(sv.aType) === String(analysisId))
+        for (let i = 0; i < filteredObjs.length; i++) {
+            let history;
+            if (specValues.filter(sv => String(sv.aType) === String(filteredObjs[i].analysis)).length > 0) {
+                const histId = specValues.filter(sv => String(sv.aType) === String(filteredObjs[i].analysis))[0].histId
+                history = await AnalysisInputHistory.findById(histId)
+            }
+            if (Object.keys(history).length > 0) {
+                const latestHistory = await AnalysisInputHistory.find({
+                    labId: labStockId,
+                    analysisId: analysisId,
+                    obj: filteredObjs[i].id + "-" + filteredObjs[i].unit,
+                    date: { $lte: history.date }
+                }).populate(['user']).sort({ date: -1 })
+                if (latestHistory.length > 0) {
+                    histories.push(latestHistory)
+                }
+            } else {
+                const latestHistory = await AnalysisInputHistory.find({
+                    labId: labStockId,
+                    analysisId: analysisId,
+                    obj: filteredObjs[i].id + "-" + filteredObjs[i].unit
+                }).populate(['user']).sort({ date: -1 })
+                if (latestHistory.length > 0) {
+                    histories.push(latestHistory)
+                }
+            }
         }
     }
     return res.json({

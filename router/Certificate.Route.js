@@ -2,6 +2,7 @@ const express = require('express')
 const fs = require('fs')
 const path = require('path')
 const CertificateModel = require('../models/certificateModel')
+const mongoose = require('mongoose')
 const router = express.Router()
 
 router.post('/', async (req, res) => {
@@ -42,7 +43,7 @@ router.post('/', async (req, res) => {
             .then((e) => res.json(e))
             .catch((err) => console.log(err));
     } else {
-        const certData = CertificateModel.findById(req.body.rowid)
+        const certData = await CertificateModel.findById(mongoose.Types.ObjectId(req.body.rowid))
 
         const uploadPath = path.join(__dirname, `../uploads/certificates`);
         if (!fs.existsSync(uploadPath)) {
@@ -55,7 +56,9 @@ router.post('/', async (req, res) => {
         let logo_filename = '';
         let footer_filename = ''
         if (req.files.logo !== null && req.files.logo !== undefined) {
-            fs.unlinkSync(`${uploadPath}/${certData.logo_filename}`)
+            if (fs.existsSync(`${uploadPath}/${certData.logo_filename}`)) {
+                fs.unlinkSync(`${uploadPath}/${certData.logo_filename}`)
+            }
             const logoImg = req.files.logo;
             if (logoImg) {
                 logo_filename = new Date().getTime() + "_" + logoImg.name;
@@ -63,7 +66,9 @@ router.post('/', async (req, res) => {
             }
         }
         if (req.files.footer !== null && req.files.footer !== undefined) {
-            fs.unlinkSync(`${uploadPath}/${certData.footer_filename}`)
+            if (fs.existsSync(`${uploadPath}/${certData.footer_filename}`)) {
+                fs.unlinkSync(`${uploadPath}/${certData.footer_filename}`)
+            }
             const footerImg = req.files.footer
             if (footerImg) {
                 footer_filename = new Date().getTime() + "_" + footerImg.name;
@@ -71,57 +76,47 @@ router.post('/', async (req, res) => {
             }
         }
 
-        CertificateModel.findById(req.body.rowid)
-            .then((e) => {
-                if (e) {
-                    if (e.logoUid !== req.body.logoUid && e.footerUid !== req.body.footerUid) {
-                        e.name = req.body.name;
-                        e.company = req.body.company;
-                        e.place = req.body.place;
-                        e.logo_filename = logo_filename;
-                        e.footer_filename = footer_filename;
-                        e.logoUid = req.body.logoUid;
-                        e.footerUid = req.body.footerUid;
-                        e.certificatetitle = req.body.certificatetitle;
-                        e.date_format = req.body.date_format;
-                    } else if (
-                        e.logoUid === req.body.logoUid &&
-                        e.footerUid !== req.body.footerUid
-                    ) {
-                        e.name = req.body.name;
-                        e.company = req.body.company;
-                        e.place = req.body.place;
-                        e.footer = footer_filename;
-                        e.footerUid = req.body.footerUid;
-                        e.certificatetitle = req.body.certificatetitle;
-                        e.date_format = req.body.date_format;
-                    } else if (
-                        e.logoUid !== req.body.logoUid &&
-                        e.footerUid === req.body.footerUid
-                    ) {
-                        e.name = req.body.name;
-                        e.company = req.body.company;
-                        e.place = req.body.place;
-                        e.logo = logo_filename;
-                        e.logoUid = req.body.logoUid;
-                        e.certificatetitle = req.body.certificatetitle;
-                        e.date_format = req.body.date_format;
-                    } else if (
-                        e.logoUid === req.body.logoUid &&
-                        e.footerUid === req.body.footerUid
-                    ) {
-                        e.name = req.body.name;
-                        e.company = req.body.company;
-                        e.place = req.body.place;
-                        e.certificatetitle = req.body.certificatetitle;
-                        e.date_format = req.body.date_format;
-                    }
-                    e.save()
-                        .then((ee) => res.json(ee))
-                        .catch((errr) => console.log(errr));
-                }
-            })
-            .catch((err) => console.log(err));
+        if (certData) {
+            if (certData.logoUid !== req.body.logoUid && certData.footerUid !== req.body.footerUid) {
+                certData.name = req.body.name;
+                certData.company = req.body.company;
+                certData.place = req.body.place;
+                certData.logo_filename = logo_filename;
+                certData.footer_filename = footer_filename;
+                certData.logoUid = req.body.logoUid;
+                certData.footerUid = req.body.footerUid;
+                certData.certificatetitle = req.body.certificatetitle;
+                certData.date_format = req.body.date_format;
+            } else if (certData.logoUid === req.body.logoUid && certData.footerUid !== req.body.footerUid) {
+                certData.name = req.body.name;
+                certData.company = req.body.company;
+                certData.place = req.body.place;
+                certData.footer_filename = footer_filename;
+                certData.footerUid = req.body.footerUid;
+                certData.certificatetitle = req.body.certificatetitle;
+                certData.date_format = req.body.date_format;
+            } else if (certData.logoUid !== req.body.logoUid && certData.footerUid === req.body.footerUid) {
+                certData.name = req.body.name;
+                certData.company = req.body.company;
+                certData.place = req.body.place;
+                certData.logo_filename = logo_filename;
+                certData.logoUid = req.body.logoUid;
+                certData.certificatetitle = req.body.certificatetitle;
+                certData.date_format = req.body.date_format;
+            } else if (certData.logoUid === req.body.logoUid && certData.footerUid === req.body.footerUid) {
+                certData.name = req.body.name;
+                certData.company = req.body.company;
+                certData.place = req.body.place;
+                certData.certificatetitle = req.body.certificatetitle;
+                certData.date_format = req.body.date_format;
+            }
+            try {
+                await certData.save()
+                return res.json(certData)
+            } catch (err) {
+                return res.status(500).json(err)
+            }
+        }
     }
 
 })
