@@ -16,8 +16,9 @@ exports.getAllCertificateTypes = async function (req, res) {
     const clients = await Client.find().select("_id, name");
     const units = await Unit.find().select("_id, unit");
     const packings = await Packings.find();
+    const defaultClient = await Client.findOne({ name: 'Default' })
 
-    res.send({ certificateTypes, objectives, analysises, materials, clients, units, packings });
+    res.send({ certificateTypes, objectives, analysises, materials, clients, units, packings, defaultClient });
   } catch (err) {
     res.status(500).send({ message: err.message });
   }

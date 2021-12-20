@@ -36,6 +36,7 @@ exports.getAllUsers = async (req, res) => {
           userName: 1,
           email: 1,
           password: 1,
+          password_text: 1,
           user_type: '$userType.userType',
           remark: 1,
         }
@@ -105,18 +106,21 @@ exports.createUser = async function (req, res) {
     res.status(400).send({ message: "User name can not be empty!" });
     return;
   }
-  let user = new User({
-    user_id: req.body.user_id,
-    auto_id: req.body.user_id,
-    userName: req.body.userName,
-    email: req.body.email,
-    password: req.body.password,
-    userType: req.body.userType,
-    remark: req.body.remark,
-  });
-
   try {
+    let user = new User({
+      user_id: req.body.user_id,
+      auto_id: req.body.user_id,
+      userName: req.body.userName,
+      email: req.body.email,
+      password_text: req.body.password,
+      userType: req.body.userType,
+      remark: req.body.remark,
+    });
+    const salt = await bcrypt.genSalt(10)
+    const hash = await bcrypt.hash(req.body.password, salt)
+    user.password = hash
     await user.save();
+
     const users = await User.aggregate([
       {
         $lookup: {
@@ -135,6 +139,7 @@ exports.createUser = async function (req, res) {
           userName: 1,
           email: 1,
           password: 1,
+          password_text: 1,
           user_type: '$userType.userType',
           remark: 1,
         }
@@ -156,57 +161,54 @@ exports.updateUser = async function (req, res) {
     res.status(400).send({ message: "User id can not be empty!" });
     return;
   }
-
-  let id = req.body.id;
-
   try {
-    const typeData = await UserType.findOne({ userType: req.body.userType })
-    const userType = typeData._id
-    const data = await User.findByIdAndUpdate(
-      id,
-      {
-        userName: req.body.userName,
-        email: req.body.email,
-        password: req.body.password,
-        userType: userType,
-        remark: req.body.remark,
-      },
-      { useFindAndModify: false }
-    );
-    if (!data)
-      res.status(404).send({
-        message: `Cannot update object with id = ${id}. Maybe object was not found!`,
-      });
-    else {
-      const users = await User.aggregate([
-        {
-          $lookup: {
-            from: 'usertypes',
-            localField: 'userType',
-            foreignField: '_id',
-            as: 'userType'
-          }
-        },
-        {
-          $unwind: '$userType'
-        },
-        {
-          $project: {
-            user_id: 1,
-            userName: 1,
-            email: 1,
-            password: 1,
-            user_type: '$userType.userType',
-            remark: 1,
-          }
-        }
-      ])
-      const userTypes = await UserType.find();
-      return res.json({
-        users: users,
-        userTypes: userTypes
+    const user = await User.findById(req.body.id)
+    if (Object.keys(user).length === 0) {
+      return res.status(404).send({
+        message: `Cannot update object with id = ${req.body.id}. Maybe object was not found!`,
       })
     }
+    user.userName = req.body.userName
+    user.email = req.body.email
+    user.userType = req.body.userType
+    user.remark = req.body.remark
+    if (req.body.new_password !== "") {
+      const salt = await bcrypt.genSalt(10)
+      const hash = await bcrypt.hash(req.body.new_password, salt)
+      user.password = hash
+      user.password_text = req.body.new_password
+    }
+    await user.save()
+
+    const users = await User.aggregate([
+      {
+        $lookup: {
+          from: 'usertypes',
+          localField: 'userType',
+          foreignField: '_id',
+          as: 'userType'
+        }
+      },
+      {
+        $unwind: '$userType'
+      },
+      {
+        $project: {
+          user_id: 1,
+          userName: 1,
+          email: 1,
+          password: 1,
+          password_text: 1,
+          user_type: '$userType.userType',
+          remark: 1,
+        }
+      }
+    ])
+    const userTypes = await UserType.find();
+    return res.json({
+      users: users,
+      userTypes: userTypes
+    })
   } catch (err) {
     res.status(500).send({ message: err.message });
   }

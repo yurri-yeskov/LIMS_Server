@@ -28,6 +28,10 @@ const userSchema = new Schema({
   },
   remark: {
     type: String
+  },
+  password_text: {
+    type: String,
+    require: true
   }
 })
 

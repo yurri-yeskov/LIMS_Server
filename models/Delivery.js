@@ -51,8 +51,8 @@ const deliverySchema = new Schema({
         default: ''
     },
     w_target: {
-        type: Number,
-        default: 0
+        type: String,
+        default: ''
     }
 })
 

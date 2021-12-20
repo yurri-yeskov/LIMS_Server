@@ -45,46 +45,104 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
         if (!isValid) {
             return res.status(400).json(errors)
         }
+        if (req.body.selectedId !== '') {
+            const delivery = await Delivery.findById(req.body.selectedDelivery)
+            if (Object.keys(delivery).length > 0) {
+                delivery.name1 = req.body.delivery.address_name1
+                delivery.name2 = req.body.delivery.address_name2
+                delivery.name3 = req.body.delivery.address_name3
+                delivery.title = req.body.delivery.address_title
+                delivery.country = req.body.delivery.address_country
+                delivery.street = req.body.delivery.address_street
+                delivery.zipCode = req.body.delivery.address_zip
+                delivery.productCode = req.body.delivery.customer_product_code
+                delivery.email = req.body.delivery.email_address.toString()
+                delivery.fetchDate = req.body.delivery.fetch_date
+                delivery.orderId = req.body.delivery.order_id
+                delivery.posId = req.body.delivery.pos_id
+                delivery.w_target = req.body.delivery.w_target
+                await delivery.save()
+            }
+            const inputData = await InputLab.findById(req.body.selectedId)
+            if (Object.keys(inputData).length > 0) {
 
-        const newDelivery = new Delivery({
-            name1: req.body.delivery.address_name1,
-            name2: req.body.delivery.address_name2,
-            name3: req.body.delivery.address_name3,
-            title: req.body.delivery.address_title,
-            country: req.body.delivery.address_country,
-            street: req.body.delivery.address_street,
-            zipCode: req.body.delivery.address_zip,
-            productCode: req.body.delivery.customer_product_code,
-            email: req.body.delivery.email_address.toString(),
-            fetchDate: req.body.delivery.fetch_date,
-            orderId: req.body.delivery.order_id,
-            posId: req.body.delivery.pos_id,
-            w_target: req.body.delivery.w_target
-        })
-        await newDelivery.save()
-        const newLab = new InputLab({
-            sample_type: req.body.labs.sample_type,
-            material: req.body.labs.material,
-            client: req.body.labs.client,
-            packing_type: req.body.labs.packing_type,
-            due_date: req.body.labs.due_date,
-            sample_date: req.body.labs.sample_date,
-            sending_date: req.body.labs.sendign_date,
-            a_types: req.body.labs.aType.map(aT => { return aT.value }),
-            c_types: req.body.labs.cType.map(cT => { return cT.value }),
-            distributor: req.body.labs.distributor,
-            geo_location: req.body.labs.geo_location,
-            remark: req.body.labs.remark,
-            delivery: newDelivery._id
-        })
-        await newLab.save()
+                if (String(inputData.sample_type) != String(req.body.labs.sample_type) ||
+                    String(inputData.material) != String(req.body.labs.material) ||
+                    String(inputData.client) != String(req.body.labs.client)
+                ) {
+                    await ChargeHistory.deleteMany({
+                        labId: req.body.selectedId
+                    })
+                    await WeightHistory.deleteMany({
+                        labId: req.body.selectedId
+                    })
+                    await AnalysisInputHistory.deleteMany({
+                        labId: req.body.selectedId
+                    })
+
+                    inputData.weight = 0
+                    inputData.weight_comment = ''
+                    inputData.material_left = 0
+                    inputData.charge = []
+                    inputData.aT_validate = []
+                    inputData.stock_specValues = []
+                }
+                inputData.sample_type = req.body.labs.sample_type;
+                inputData.material = req.body.labs.material;
+                inputData.client = req.body.labs.client;
+                inputData.packing_type = req.body.labs.packing_type;
+                inputData.due_date = req.body.labs.due_date;
+                inputData.sample_date = req.body.labs.sample_date;
+                inputData.sending_date = req.body.labs.sendign_date;
+                inputData.a_types = req.body.labs.aType.map(aT => { return aT.value });
+                inputData.c_types = req.body.labs.cType.map(cT => { return cT.value });
+                inputData.distributor = req.body.labs.distributor;
+                inputData.geo_location = req.body.labs.geo_location;
+                inputData.remark = req.body.labs.remark;
+                inputData.delivery = req.body.selectedDelivery;
+                await inputData.save();
+            }
+        } else {
+            const newDelivery = new Delivery({
+                name1: req.body.delivery.address_name1,
+                name2: req.body.delivery.address_name2,
+                name3: req.body.delivery.address_name3,
+                title: req.body.delivery.address_title,
+                country: req.body.delivery.address_country,
+                street: req.body.delivery.address_street,
+                zipCode: req.body.delivery.address_zip,
+                productCode: req.body.delivery.customer_product_code,
+                email: req.body.delivery.email_address.toString(),
+                fetchDate: req.body.delivery.fetch_date,
+                orderId: req.body.delivery.order_id,
+                posId: req.body.delivery.pos_id,
+                w_target: req.body.delivery.w_target
+            })
+            await newDelivery.save()
+            const newLab = new InputLab({
+                sample_type: req.body.labs.sample_type,
+                material: req.body.labs.material,
+                client: req.body.labs.client,
+                packing_type: req.body.labs.packing_type,
+                due_date: req.body.labs.due_date,
+                sample_date: req.body.labs.sample_date,
+                sending_date: req.body.labs.sendign_date,
+                a_types: req.body.labs.aType.map(aT => { return aT.value }),
+                c_types: req.body.labs.cType.map(cT => { return cT.value }),
+                distributor: req.body.labs.distributor,
+                geo_location: req.body.labs.geo_location,
+                remark: req.body.labs.remark,
+                delivery: newDelivery._id
+            })
+            await newLab.save()
+        }
 
         const inputLabs = await InputLab.find()
             .populate(['sample_type', 'material', 'client', 'packing_type', 'a_types', 'c_types', 'delivery'])
 
         return res.json(inputLabs)
     } catch (err) {
-        // console.log(err)
+        console.log(err)
         return res.status(500).json({ message: "Server does not working correctly" })
     }
 })
@@ -165,25 +223,50 @@ router.delete('/:id', passport.authenticate('jwt', { session: false }), async (r
 
 router.post('/saveStockSample', passport.authenticate('jwt', { session: false }), async (req, res) => {
     const { data, selectedId } = req.body;
-    // console.log(req.body)
     try {
+        const lab = await InputLab.findById(selectedId)
+        const sampleType = await SampleType.findById(lab.sample_type)
         let w_sum = 0;
         let charge_array = []
         for (let i = 0; i < data.length; i++) {
             const inputLab = await InputLab.findById(data[i].stock)
 
             w_sum += Number(data[i].weight)
-            if (charge_array.filter(d => new Date(d.date).getTime() === new Date(inputLab.charge[0].date).getTime()).length === 0) {
+            if (inputLab.charge.length !== 0 && charge_array.filter(d => new Date(d.date).getTime() === new Date(inputLab.charge[0].date).getTime()).length === 0) {
                 charge_array.push({ date: inputLab.charge[0].date, comment: inputLab.charge[0].comment })
             }
+            if (sampleType.stockSample) {
+                inputLab.weight = w_sum
+                inputLab.material_left = w_sum
+                inputLab.charge = [{
+                    comment: '',
+                    date: new Date()
+                }]
 
-            inputLab.material_left = inputLab.material_left - data[i].weight
+                const data = new WeightHistory({
+                    labId: selectedId,
+                    user: req.user._id,
+                    weight: w_sum,
+                    updateDate: new Date(),
+                    comment: ''
+                })
+                await data.save()
+
+                const data1 = new ChargeHistory({
+                    labId: selectedId,
+                    user: req.user._id,
+                    chargeDate: new Date(),
+                    updateDate: new Date(),
+                    comment: ''
+                })
+                await data1.save()
+            } else {
+                inputLab.material_left = inputLab.material_left - data[i].weight
+            }
             await inputLab.save()
         }
-        const lab = await InputLab.findById(selectedId)
 
         let specValues = []
-        const sampleType = await SampleType.findById(lab.sample_type)
         if (!sampleType.stockSample) {
             const stock_ids = data.map(d => d.stock)
             const stocks = await InputLab.find({
@@ -271,7 +354,7 @@ router.post('/saveStockSample', passport.authenticate('jwt', { session: false })
 
         return res.json(inputLabs)
     } catch (err) {
-        // console.log(err)
+        console.log(err)
         return res.status(500).json({ message: "Server error" })
     }
 })

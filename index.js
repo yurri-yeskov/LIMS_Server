@@ -61,40 +61,40 @@ app.get('/uploads/certificates/:filename', async (req, res) => {
 const userFind = async () => {
   let userType = await UserType.find({ userType: "General Admin" });
   if (userType.length == 0) {
-    //general_id.save()
-    let defaultUserType = new UserType();
-    defaultUserType.userType_id = "1";
-    defaultUserType.userType = "General Admin";
-    defaultUserType.labInput = true;
-    defaultUserType.labAnalysis = true;
-    defaultUserType.labAdmin = true;
-    defaultUserType.stockUser = true;
-    defaultUserType.stockAdmin = true;
-    defaultUserType.hsImport = true;
-    defaultUserType.hsExport = true;
-    defaultUserType.hsAdmin = true;
-    defaultUserType.geologyImport = true;
-    defaultUserType.geologyExport = true;
-    defaultUserType.geologyAdmin = true;
-    defaultUserType.save();
+    try {
+      let defaultUserType = new UserType();
+      defaultUserType.userType_id = "1";
+      defaultUserType.userType = "General Admin";
+      defaultUserType.labInput = true;
+      defaultUserType.labAnalysis = true;
+      defaultUserType.labAdmin = true;
+      defaultUserType.stockUser = true;
+      defaultUserType.stockAdmin = true;
+      defaultUserType.hsImport = true;
+      defaultUserType.hsExport = true;
+      defaultUserType.hsAdmin = true;
+      defaultUserType.geologyImport = true;
+      defaultUserType.geologyExport = true;
+      defaultUserType.geologyAdmin = true;
+      await defaultUserType.save();
 
-    let userInfo = await User.find({ email: "Sev123@gmail.com" });
-    if (userInfo.length == 0) {
-      let defaultUser = new User();
-      defaultUser.user_id = '1';
-      defaultUser.userName = "Severin";
-      defaultUser.email = "Sev123@gmail.com";
-      // defaultUser.password = "sev123!@#";
-      defaultUser.userType = defaultUserType._id;
-      // await defaultUser.save();
+      let userInfo = await User.find({ email: "Sev123@gmail.com" });
+      if (userInfo.length == 0) {
+        let defaultUser = new User();
+        defaultUser.user_id = '1';
+        defaultUser.userName = "Severin";
+        defaultUser.email = "Sev123@gmail.com";
+        defaultUser.password_text = "sev123!@#";
+        defaultUser.userType = defaultUserType._id;
+        defaultUser.remark = ''
 
-      bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash("sev123!@#", salt, async (err, hash) => {
-          if (err) throw err;
-          defaultUser.password = hash;
-          await defaultUser.save();
-        });
-      });
+        const salt = await bcrypt.genSalt(10)
+        const hash = await bcrypt.hash("sev123!@#", salt)
+        defaultUser.password = hash
+        await defaultUser.save();
+      }
+    } catch (err) {
+      console.log(err)
     }
   }
 };

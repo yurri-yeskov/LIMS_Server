@@ -12,7 +12,7 @@ exports.getAllMaterials = async function (req, res) {
     const objectives = await Objective.find().populate('units');
     const analysisTypes = await AnalysisTypes.find();
     const units = await Unit.find();
-    const clients = await Client.find().select("_id, name");
+    const clients = await Client.find();
 
     const obj_units = await Objective.aggregate([
       {
@@ -86,7 +86,7 @@ exports.createMaterial = async function (req, res) {
     const objectives = await Objective.find().populate('units');
     const analysisTypes = await AnalysisTypes.find();
     const units = await Unit.find();
-    const clients = await Client.find().select("_id, name");
+    const clients = await Client.find();
     const obj_units = await Objective.aggregate([
       {
         $lookup: {
