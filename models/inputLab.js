@@ -122,6 +122,16 @@ const inputLabSchema = new Schema({
             type: Number,
             default: 0
         }
+    }],
+    stock_weights: [{
+        stock: {
+            type: mongoose.Types.ObjectId,
+            ref: 'inputlabs'
+        },
+        weight: {
+            type: Number,
+            default: 0
+        }
     }]
 })
 

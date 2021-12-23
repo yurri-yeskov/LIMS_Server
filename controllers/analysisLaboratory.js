@@ -1,5 +1,9 @@
-const InputLaboratory = require("../models/inputLaboratory");
+const InputLaboratory = require("../models/inputLab");
 const Language = require("../models/language");
+const Material = require('../models/materials')
+const AnalysisType = require('../models/analysisTypes')
+const Objective = require('../models/objectives')
+const Unit = require('../models/units')
 const objectiveHistory = require("../models/objectiveHistory");
 
 exports.getGraphData = function (req, res) {
@@ -8,37 +12,45 @@ exports.getGraphData = function (req, res) {
         return;
     }
     let query = {
-        material: {$in : req.body.data.material},
-        client_id: {$in : req.body.data.client},
-        a_types:{$in:req.body.data.combinations},
-        'Charge.charge':{ $gte: req.body.data.dateRange[0], $lte: req.body.data.dateRange[1] }
+        material: { $in: req.body.data.material },
+        client_id: { $in: req.body.data.client },
+        a_types: { $in: req.body.data.combinations },
+        'Charge.charge': { $gte: req.body.data.dateRange[0], $lte: req.body.data.dateRange[1] }
     }
     InputLaboratory.find(query)
-        .then((data)=> {
+        .then((data) => {
             res.send(data);
         })
         .catch((err) => {
             res.status(500).send({ message: err.message });
         });
 }
-exports.getAvailableanalysisType = function(req, res) {
+exports.getAvailableanalysisType = async (req, res) => {
     if (req.body === undefined) {
         res.status(400).send({ message: "Chart can't display without filter!" });
         return;
     }
-    let query = {
-        material: {$in : req.body.data.material},
-        client_id: {$in : req.body.data.client}
+    try {
+        let objValues = []
+        const materials = await Material.find({ material: { $in: req.body.data.material } })
+        await Promise.all(materials.map(async (material) => {
+            await material.objectiveValues.filter(obj => req.body.data.client.indexOf(String(obj.client)) > -1)
+                .map(obj => objValues.push(obj))
+        }))
+        const analysisTypes = await AnalysisType.find()
+        const units = await Unit.find()
+        const objectives = await Objective.find()
+        return res.json({
+            objValues: objValues,
+            analysisTypes: analysisTypes,
+            units: units,
+            objectives: objectives
+        })
+    } catch (err) {
+        return res.status(500).send({ message: err.message });
     }
-    InputLaboratory.find(query)
-    .then((data)=> {
-        res.send(data);
-    })
-    .catch((err) => {
-        res.status(500).send({ message: err.message });
-    });
 }
-exports.getinputlaboratorybyid = function(req, res) {
+exports.getinputlaboratorybyid = function (req, res) {
     if (req.body === undefined) {
         res.status(400).send({ message: "Chart can't display without filter!" });
         return;
@@ -47,19 +59,19 @@ exports.getinputlaboratorybyid = function(req, res) {
         _id: req.body.data,
     }
     InputLaboratory.findOne(query)
-    .then((data)=> {
-        res.send(data);
-    })
-    .catch((err) => {
-        res.status(500).send({ message: err.message });
-    });
+        .then((data) => {
+            res.send(data);
+        })
+        .catch((err) => {
+            res.status(500).send({ message: err.message });
+        });
 }
-exports.getObjectiveHistoryData = function(req, res) {
+exports.getObjectiveHistoryData = function (req, res) {
     if (req.body === undefined) {
         res.status(400).send({ message: "Chart can't display without filter!" });
         return;
     }
-    let query = {id: {$in: req.body.data }};
+    let query = { id: { $in: req.body.data } };
     objectiveHistory.find(query)
         .populate("userid", ["_id", "userName"])
         .then((data) => {
@@ -70,12 +82,12 @@ exports.getObjectiveHistoryData = function(req, res) {
         });
 }
 
-exports.getLanguage = function(req, res) {
+exports.getLanguage = function (req, res) {
     Language.find()
-    .then((data)=> {
-        res.send(data);
-    })
-    .catch((err) => {
-        res.status(500).send({ message: err.message });
-    });
+        .then((data) => {
+            res.send(data);
+        })
+        .catch((err) => {
+            res.status(500).send({ message: err.message });
+        });
 }   

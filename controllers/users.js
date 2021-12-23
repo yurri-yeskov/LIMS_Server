@@ -85,7 +85,7 @@ exports.loginUser = async function (req, res) {
       geologyAdmin: usertype_search.geologyAdmin,
       remark: usertype_search.remark,
     };
-    jwt.sign(payload, "secret", { expiresIn: 86400 }, (err, token) => {
+    jwt.sign(payload, "secret", (err, token) => {
       if (err) throw err;
       return res.json({
         success: true,

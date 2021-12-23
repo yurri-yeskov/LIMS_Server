@@ -211,11 +211,19 @@ router.delete('/:id', passport.authenticate('jwt', { session: false }), async (r
             labId: req.params.id
         })
         const data = await InputLab.findById(req.params.id)
+        for (let i = 0; i < data.stock_weights.length; i++) {
+            const stockData = await InputLab.findById(data.stock_weights[i].stock)
+            stockData.material_left += Number(data.stock_weights[i].weight)
+            await stockData.save()
+        }
         await Delivery.deleteOne({
             _id: data.delivery
         })
         await data.remove()
-        return res.json({ success: true })
+
+        const inputLabs = await InputLab.find()
+            .populate(['sample_type', 'material', 'client', 'packing_type', 'a_types', 'c_types', 'delivery'])
+        return res.json(inputLabs)
     } catch (err) {
         return res.status(500).json({ message: "Server error" })
     }
@@ -224,10 +232,12 @@ router.delete('/:id', passport.authenticate('jwt', { session: false }), async (r
 router.post('/saveStockSample', passport.authenticate('jwt', { session: false }), async (req, res) => {
     const { data, selectedId } = req.body;
     try {
-        const lab = await InputLab.findById(selectedId)
-        const sampleType = await SampleType.findById(lab.sample_type)
+        const selectedLab = await InputLab.findById(selectedId)
+        const sampleType = await SampleType.findById(selectedLab.sample_type)
+
         let w_sum = 0;
         let charge_array = []
+        let stock_weights = []
         for (let i = 0; i < data.length; i++) {
             const inputLab = await InputLab.findById(data[i].stock)
 
@@ -236,35 +246,44 @@ router.post('/saveStockSample', passport.authenticate('jwt', { session: false })
                 charge_array.push({ date: inputLab.charge[0].date, comment: inputLab.charge[0].comment })
             }
             if (sampleType.stockSample) {
-                inputLab.weight = w_sum
-                inputLab.material_left = w_sum
-                inputLab.charge = [{
-                    comment: '',
-                    date: new Date()
-                }]
+                // inputLab.weight = w_sum
+                // inputLab.material_left = w_sum
+                // inputLab.charge = [{
+                //     comment: '',
+                //     date: new Date()
+                // }]
 
-                const data = new WeightHistory({
-                    labId: selectedId,
-                    user: req.user._id,
-                    weight: w_sum,
-                    updateDate: new Date(),
-                    comment: ''
-                })
-                await data.save()
+                // const data = new WeightHistory({
+                //     labId: selectedId,
+                //     user: req.user._id,
+                //     weight: w_sum,
+                //     updateDate: new Date(),
+                //     comment: ''
+                // })
+                // await data.save()
 
-                const data1 = new ChargeHistory({
-                    labId: selectedId,
-                    user: req.user._id,
-                    chargeDate: new Date(),
-                    updateDate: new Date(),
-                    comment: ''
-                })
-                await data1.save()
+                // const data1 = new ChargeHistory({
+                //     labId: selectedId,
+                //     user: req.user._id,
+                //     chargeDate: new Date(),
+                //     updateDate: new Date(),
+                //     comment: ''
+                // })
+                // await data1.save()
             } else {
-                inputLab.material_left = inputLab.material_left - data[i].weight
+                const weight = selectedLab.stock_weights.filter(s => String(s.stock) === String(data[i].stock)).length > 0
+                    ? selectedLab.stock_weights.filter(s => String(s.stock) === String(data[i].stock))[0].weight : 0
+
+                inputLab.material_left = Number(inputLab.material_left) + Number(weight) - Number(data[i].weight)
+
+                stock_weights.push({
+                    stock: data[i].stock,
+                    weight: data[i].weight
+                })
             }
             await inputLab.save()
         }
+
 
         let specValues = []
         if (!sampleType.stockSample) {
@@ -342,11 +361,17 @@ router.post('/saveStockSample', passport.authenticate('jwt', { session: false })
                 })
             }
             // console.log(">>>>>>>>", specValues)
-            lab.weight = w_sum
-            lab.material_left = w_sum
-            lab.charge = charge_array
-            lab.stock_specValues = specValues
-            await lab.save()
+            selectedLab.weight = w_sum
+            selectedLab.material_left = w_sum
+            selectedLab.charge = charge_array
+            selectedLab.stock_specValues = specValues
+            if (selectedLab.stock_weights.length === 0) {
+                selectedLab.stock_weights = stock_weights
+            } else {
+                selectedLab.stock_weights.map(stock => stock_weights.filter(sw => String(sw.stock) === String(stock.stock)).length > 0
+                    ? stock.weight = stock_weights.filter(sw => String(sw.stock) === String(stock.stock))[0].weight : stock)
+            }
+            await selectedLab.save()
         }
 
         const inputLabs = await InputLab.find()
