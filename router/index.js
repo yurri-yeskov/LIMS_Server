@@ -120,9 +120,11 @@ exports.init = function (app) {
   app.post("/get_available_analysis_type", AnalysisLaboratoryController.getAvailableanalysisType);
   app.post("/get_input_laboratory_by_id", AnalysisLaboratoryController.getinputlaboratorybyid);
   app.get("/get_certificate", certificateCtr.getCertificate);
+  app.post('/upload_certificate_template', certificateCtr.uploadFile);
   app.post("/get_certificate_datefotmat", certificateCtr.getCertificate_dateformat);
   app.post("/add_certificate", upload.array("files"), certificateCtr.AddCertificate);
   app.post("/del_certificate", certificateCtr.DelCertificate);
+  app.post("/copy_productdata", certificateCtr.CopyCertificate);
   app.post("/update_productdata", certificateCtr.Upproductdata);
   app.post("/update_tabledata", certificateCtr.Uptabledata);
   app.post("/update_Freetext", certificateCtr.UpFreetext);

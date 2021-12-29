@@ -55,7 +55,7 @@ router.post('/', async (req, res) => {
         }
         let logo_filename = '';
         let footer_filename = ''
-        if (req.files.logo !== null && req.files.logo !== undefined) {
+        if (req.files !== null && req.files.logo !== null && req.files.logo !== undefined) {
             if (fs.existsSync(`${uploadPath}/${certData.logo_filename}`)) {
                 fs.unlinkSync(`${uploadPath}/${certData.logo_filename}`)
             }
@@ -65,7 +65,7 @@ router.post('/', async (req, res) => {
                 logoImg.mv(`${uploadPath}/${logo_filename}`);
             }
         }
-        if (req.files.footer !== null && req.files.footer !== undefined) {
+        if (req.files !== null && req.files.footer !== null && req.files.footer !== undefined) {
             if (fs.existsSync(`${uploadPath}/${certData.footer_filename}`)) {
                 fs.unlinkSync(`${uploadPath}/${certData.footer_filename}`)
             }

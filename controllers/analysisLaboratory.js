@@ -6,18 +6,25 @@ const Objective = require('../models/objectives')
 const Unit = require('../models/units')
 const objectiveHistory = require("../models/objectiveHistory");
 
-exports.getGraphData = function (req, res) {
+exports.getGraphData = async (req, res) => {
     if (req.body === undefined) {
         res.status(400).send({ message: "Chart can't display without filter!" });
         return;
     }
+
+    const materials = await Material.find()
+    const material_ids = materials.filter(m => req.body.data.material.indexOf(m.material) > -1)
+        .map(mm => String(mm._id))
+
     let query = {
-        material: { $in: req.body.data.material },
-        client_id: { $in: req.body.data.client },
+        material: { $in: material_ids },
+        client: { $in: req.body.data.client },
         a_types: { $in: req.body.data.combinations },
-        'Charge.charge': { $gte: req.body.data.dateRange[0], $lte: req.body.data.dateRange[1] }
+        'charge.date': { $gte: req.body.data.dateRange[0], $lte: req.body.data.dateRange[1] }
     }
+    // console.log(query)
     InputLaboratory.find(query)
+        .populate(['material'])
         .then((data) => {
             res.send(data);
         })

@@ -213,8 +213,10 @@ router.delete('/:id', passport.authenticate('jwt', { session: false }), async (r
         const data = await InputLab.findById(req.params.id)
         for (let i = 0; i < data.stock_weights.length; i++) {
             const stockData = await InputLab.findById(data.stock_weights[i].stock)
-            stockData.material_left += Number(data.stock_weights[i].weight)
-            await stockData.save()
+            if (stockData !== null && stockData !== undefined && Object.keys(stockData).length > 0) {
+                stockData.material_left += Number(data.stock_weights[i].weight)
+                await stockData.save()
+            }
         }
         await Delivery.deleteOne({
             _id: data.delivery
@@ -225,6 +227,7 @@ router.delete('/:id', passport.authenticate('jwt', { session: false }), async (r
             .populate(['sample_type', 'material', 'client', 'packing_type', 'a_types', 'c_types', 'delivery'])
         return res.json(inputLabs)
     } catch (err) {
+        console.log(err)
         return res.status(500).json({ message: "Server error" })
     }
 })
@@ -234,6 +237,13 @@ router.post('/saveStockSample', passport.authenticate('jwt', { session: false })
     try {
         const selectedLab = await InputLab.findById(selectedId)
         const sampleType = await SampleType.findById(selectedLab.sample_type)
+        const row_stock_weights = selectedLab.stock_weights;
+
+        for (let j = 0; j < row_stock_weights.length; j++) {
+            const stock_lab = await InputLab.findById(row_stock_weights[j].stock);
+            stock_lab.material_left = stock_lab.material_left + row_stock_weights[j].weight;
+            await stock_lab.save();
+        }
 
         let w_sum = 0;
         let charge_array = []
@@ -271,10 +281,7 @@ router.post('/saveStockSample', passport.authenticate('jwt', { session: false })
                 // })
                 // await data1.save()
             } else {
-                const weight = selectedLab.stock_weights.filter(s => String(s.stock) === String(data[i].stock)).length > 0
-                    ? selectedLab.stock_weights.filter(s => String(s.stock) === String(data[i].stock))[0].weight : 0
-
-                inputLab.material_left = Number(inputLab.material_left) + Number(weight) - Number(data[i].weight)
+                inputLab.material_left = Number(inputLab.material_left) - Number(data[i].weight)
 
                 stock_weights.push({
                     stock: data[i].stock,
@@ -283,7 +290,6 @@ router.post('/saveStockSample', passport.authenticate('jwt', { session: false })
             }
             await inputLab.save()
         }
-
 
         let specValues = []
         if (!sampleType.stockSample) {
