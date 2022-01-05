@@ -155,12 +155,12 @@ exports.DelCertificate = async (req, res) => {
         }
       });
     }
-    if (fs.existsSync(`${uploadPath}/${certificateData.logo_filename}`)) {
-      fs.unlinkSync(`${uploadPath}/${certificateData.logo_filename}`)
-    }
-    if (fs.existsSync(`${uploadPath}/${certificateData.footer_filename}`)) {
-      fs.unlinkSync(`${uploadPath}/${certificateData.footer_filename}`)
-    }
+    // if (fs.existsSync(`${uploadPath}/${certificateData.logo_filename}`)) {
+    //   fs.unlinkSync(`${uploadPath}/${certificateData.logo_filename}`)
+    // }
+    // if (fs.existsSync(`${uploadPath}/${certificateData.footer_filename}`)) {
+    //   fs.unlinkSync(`${uploadPath}/${certificateData.footer_filename}`)
+    // }
     await certificateData.remove()
     return res.json({ success: true })
   } catch (err) {
@@ -228,26 +228,50 @@ exports.uploadFile = async (req, res) => {
           fieldname: null
         })
       }
-      let query = { name: parsedCSV[i][0] };
-      let update = {
-        productdata: {
-          productTitle: parsedCSV[i][6],
-          productData: pData
-        },
-        freetext: parsedCSV[i][9],
-        tablecol: columnData,
-        logo_filename: parsedCSV[i][3],
-        footer_filename: parsedCSV[i][10],
-        name: parsedCSV[i][0],
-        company: parsedCSV[i][2],
-        place: parsedCSV[i][4],
-        certificatetitle: parsedCSV[i][1],
-        date_format: parsedCSV[i][5],
-        logoUid: parsedCSV[i][11],
-        footerUid: parsedCSV[i][12],
-      };
-      let options = { upsert: true, new: true, setDefaultsOnInsert: true, useFindAndModify: false };
-      await CertificateModel.findOneAndUpdate(query, update, options)
+      let certificate = await CertificateModel.findById(parsedCSV[i][13])
+      if (certificate) {
+        let query = { _id: parsedCSV[i][13] };
+        let update = {
+          productdata: {
+            productTitle: parsedCSV[i][6],
+            productData: pData
+          },
+          freetext: parsedCSV[i][9],
+          tablecol: columnData,
+          logo_filename: parsedCSV[i][3],
+          footer_filename: parsedCSV[i][10],
+          name: parsedCSV[i][0],
+          company: parsedCSV[i][2],
+          place: parsedCSV[i][4],
+          certificatetitle: parsedCSV[i][1],
+          date_format: parsedCSV[i][5],
+          logoUid: parsedCSV[i][11],
+          footerUid: parsedCSV[i][12],
+        };
+        let options = { upsert: true, new: true, setDefaultsOnInsert: true, useFindAndModify: false };
+
+        await CertificateModel.findOneAndUpdate(query, update, options)
+      } else {
+        const newCertificate = new CertificateModel({
+          _id: parsedCSV[i][13],
+          productdata: {
+            productTitle: parsedCSV[i][6],
+            productData: pData
+          },
+          freetext: parsedCSV[i][9],
+          tablecol: columnData,
+          logo_filename: parsedCSV[i][3],
+          footer_filename: parsedCSV[i][10],
+          name: parsedCSV[i][0],
+          company: parsedCSV[i][2],
+          place: parsedCSV[i][4],
+          certificatetitle: parsedCSV[i][1],
+          date_format: parsedCSV[i][5],
+          logoUid: parsedCSV[i][11],
+          footerUid: parsedCSV[i][12],
+        })
+        await newCertificate.save()
+      }
     }
     const certificateTemplates = await CertificateModel.find()
     return res.json(certificateTemplates)
@@ -272,9 +296,9 @@ exports.CopyCertificate = async (req, res) => {
     }
 
     const newCertificate = new CertificateModel({
-      productData: oldCertificate.productData,
+      productdata: oldCertificate.productdata,
       freetext: oldCertificate.freetext,
-      tableCol: oldCertificate.tableCol,
+      tablecol: oldCertificate.tablecol,
       logo_filename: new_logo_filename,
       footer_filename: new_footer_filename,
       name: oldCertificate.name,
