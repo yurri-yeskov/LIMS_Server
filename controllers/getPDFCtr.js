@@ -22,35 +22,35 @@ exports.getanaldata = async function (req, res) {
   await Promise.all(
     req.body.productdata.map(async (v, i) => {
       let obj = { name: v.name, value: "" };
-      if (v.pagename == 0) {
+      if (v.pagename === 0) {
         await Labo.findById(req.body.rowid)
           .then((e) => {
             if (e) {
-              if (v.fieldname == "Due Date")
+              if (v.fieldname === "Due Date")
                 obj.value = moment(e.due_date).format(req.body.dateformat);
-              else if (v.fieldname == "Sample Type") obj.value = e.sample_type;
-              else if (v.fieldname == "Material") obj.value = e.material;
-              else if (v.fieldname == "Client")
+              else if (v.fieldname === "Sample Type") obj.value = e.sample_type;
+              else if (v.fieldname === "Material") obj.value = e.material;
+              else if (v.fieldname === "Client")
                 obj.value = e.client.split("-")[0];
-              else if (v.fieldname == "Packing Type")
+              else if (v.fieldname === "Packing Type")
                 obj.value = e.packing_type;
-              else if (v.fieldname == "Analysis Type") {
+              else if (v.fieldname === "Analysis Type") {
                 let atypesvalue = "";
                 e.a_types.map((item) => {
                   atypesvalue += "," + item;
                 });
                 obj.value = atypesvalue.substr(1, atypesvalue.length);
-              } else if (v.fieldname == "Certificate") {
+              } else if (v.fieldname === "Certificate") {
                 let ctypesvalue = "";
                 e.c_types.map((item) => {
                   ctypesvalue += "," + item;
                 });
                 obj.value = ctypesvalue.substr(1, ctypesvalue.length);
-              } else if (v.fieldname == "Sending Date")
+              } else if (v.fieldname === "Sending Date")
                 obj.value = moment(e.sending_date).format(req.body.dateformat);
-              else if (v.fieldname == "Sample Date")
+              else if (v.fieldname === "Sample Date")
                 obj.value = moment(e.sample_date).format(req.body.dateformat);
-              else if (v.fieldname == "Weight(actual)") {
+              else if (v.fieldname === "Weight(actual)") {
                 let wei = "";
                 e.Weight.map((item) => {
                   wei += "," + item.weight;
@@ -58,7 +58,7 @@ exports.getanaldata = async function (req, res) {
                 obj.value = wei.substr(1, wei.length);
                 let arr = obj.value.split(",");
                 obj.value = arr[arr.length - 1];
-              } else if (v.fieldname == "Charge") {
+              } else if (v.fieldname === "Charge") {
                 let chargee = "";
                 e.Charge.map((item) => {
                   chargee += "," + item.charge;
@@ -66,37 +66,37 @@ exports.getanaldata = async function (req, res) {
                 obj.value = chargee.substr(1, chargee.length);
                 let arr = obj.value.split(",");
                 obj.value = arr[arr.length - 1];
-              } else if (v.fieldname == "Remark") obj.value = e.remark;
-              else if (v.fieldname == "Delivering.Address.Name1") {
+              } else if (v.fieldname === "Remark") obj.value = e.remark;
+              else if (v.fieldname === "Delivering.Address.Name1") {
                 obj.value = req.body.c_rowdata.delivering.address_name1;
-              } else if (v.fieldname == "Delivering.Address.Title") {
+              } else if (v.fieldname === "Delivering.Address.Title") {
                 obj.value = req.body.c_rowdata.delivering.address_title;
-              } else if (v.fieldname == "Delivering.Address.Country") {
+              } else if (v.fieldname === "Delivering.Address.Country") {
                 obj.value = req.body.c_rowdata.delivering.address_country;
-              } else if (v.fieldname == "Delivering.Address.Name2") {
+              } else if (v.fieldname === "Delivering.Address.Name2") {
                 obj.value = req.body.c_rowdata.delivering.address_name2;
-              } else if (v.fieldname == "Delivering.Address.Name3") {
+              } else if (v.fieldname === "Delivering.Address.Name3") {
                 obj.value = req.body.c_rowdata.delivering.address_name3;
-              } else if (v.fieldname == "Delivering.Address.Street") {
+              } else if (v.fieldname === "Delivering.Address.Street") {
                 obj.value = req.body.c_rowdata.delivering.address_street;
-              } else if (v.fieldname == "Delivering.Address.ZIP") {
+              } else if (v.fieldname === "Delivering.Address.ZIP") {
                 obj.value = req.body.c_rowdata.delivering.address_zip;
-              } else if (v.fieldname == "CustomerProductCode") {
+              } else if (v.fieldname === "CustomerProductCode") {
                 obj.value = req.body.c_rowdata.delivering.customer_product_code;
-              } else if (v.fieldname == "E-mail Address") {
+              } else if (v.fieldname === "E-mail Address") {
                 req.body.c_rowdata.delivering.email_address.map((v) => {
                   obj.value += "," + v;
                 });
                 obj.value = obj.value.substr(1, obj.value.length);
-              } else if (v.fieldname == "FetchDate") {
+              } else if (v.fieldname === "FetchDate") {
                 obj.value = moment(
                   req.body.c_rowdata.delivering.fetch_date
                 ).format(req.body.dateformat);
-              } else if (v.fieldname == "OrderId") {
+              } else if (v.fieldname === "OrderId") {
                 obj.value = req.body.c_rowdata.delivering.order_id;
-              } else if (v.fieldname == "Pos.ID") {
+              } else if (v.fieldname === "Pos.ID") {
                 obj.value = req.body.c_rowdata.delivering.pos_id;
-              } else if (v.fieldname == "Weight(target)") {
+              } else if (v.fieldname === "Weight(target)") {
                 obj.value = req.body.c_rowdata.delivering.w_target;
               }
             }
@@ -105,13 +105,13 @@ exports.getanaldata = async function (req, res) {
             console.log(err);
           });
         data.push(obj);
-      } else if (v.pagename == 1) {
-        if (v.fieldname == "Analysis Type") {
+      } else if (v.pagename === 1) {
+        if (v.fieldname === "Analysis Type") {
           req.body.analdata.map((v) => {
             obj.value += "," + v;
           });
           obj.value = obj.value.substr(1, obj.value.length);
-        } else if (v.fieldname == "Norm") {
+        } else if (v.fieldname === "Norm") {
           req.body.analdata.map((v) => {
             AnalyModel.find({ analysisType: v })
               .then((e) => {
@@ -124,7 +124,7 @@ exports.getanaldata = async function (req, res) {
               .catch((err) => console.log(err));
           });
           obj.value = obj.value.substr(1, obj.value.length);
-        } else if (v.fieldname == "Objectives") {
+        } else if (v.fieldname === "Objectives") {
           await Promise.all(
             req.body.analdata.map(async (v) => {
               await AnalyModel.find({ analysisType: v })
@@ -155,7 +155,7 @@ exports.getanaldata = async function (req, res) {
                 .catch((err) => console.log(err));
             })
           );
-        } else if (v.fieldname == "Remark") {
+        } else if (v.fieldname === "Remark") {
           await Promise.all(
             req.body.analdata.map(async (v) => {
               await AnalyModel.find({ analysisType: v })
@@ -170,8 +170,8 @@ exports.getanaldata = async function (req, res) {
           obj.value = obj.value.substr(1, obj.value.length);
         }
         data.push(obj);
-      } else if (v.pagename == 2) {
-        if (v.fieldname == "Name") {
+      } else if (v.pagename === 2) {
+        if (v.fieldname === "Name") {
           await ClientModel.findById(req.body.clientid)
             .then(async (v) => {
               if (v) {
@@ -179,7 +179,7 @@ exports.getanaldata = async function (req, res) {
               }
             })
             .catch((err) => console.log(err));
-        } else if (v.fieldname == "Country B") {
+        } else if (v.fieldname === "Country B") {
           await ClientModel.findById(req.body.clientid)
             .then(async (v) => {
               if (v) {
@@ -187,7 +187,7 @@ exports.getanaldata = async function (req, res) {
               }
             })
             .catch((err) => console.log(err));
-        } else if (v.fieldname == "Zip Code B") {
+        } else if (v.fieldname === "Zip Code B") {
           await ClientModel.findById(req.body.clientid)
             .then(async (v) => {
               if (v) {
@@ -195,7 +195,7 @@ exports.getanaldata = async function (req, res) {
               }
             })
             .catch((err) => console.log(err));
-        } else if (v.fieldname == "City B") {
+        } else if (v.fieldname === "City B") {
           await ClientModel.findById(req.body.clientid)
             .then(async (v) => {
               if (v) {
@@ -203,7 +203,7 @@ exports.getanaldata = async function (req, res) {
               }
             })
             .catch((err) => console.log(err));
-        } else if (v.fieldname == "Address B") {
+        } else if (v.fieldname === "Address B") {
           await ClientModel.findById(req.body.clientid)
             .then(async (v) => {
               if (v) {
@@ -211,7 +211,7 @@ exports.getanaldata = async function (req, res) {
               }
             })
             .catch((err) => console.log(err));
-        } else if (v.fieldname == "Address2 B") {
+        } else if (v.fieldname === "Address2 B") {
           await ClientModel.findById(req.body.clientid)
             .then(async (v) => {
               if (v) {
@@ -252,7 +252,7 @@ exports.gethistorydata = async function (req, res) {
             if (item) {
               item.objectives.map((obj) => {
                 if (obj) {
-                  if (obj.id == anal.value && obj.unit == anal.unit_id) {
+                  if (obj.id === anal.value && obj.unit === anal.unit_id) {
                     all_data.push(anal);
                   }
                 }
@@ -274,24 +274,24 @@ exports.gethistorydata = async function (req, res) {
         allhis.map(async (e) => {
           let rowdata = {};
           if (
-            anal.label == e.label &&
-            anal.value == e.obj_value &&
-            anal.min == e.min &&
-            anal.max == e.max &&
-            anal.unit_id == e.unit
+            anal.label === e.label &&
+            anal.value === e.obj_value &&
+            anal.min === e.min &&
+            anal.max === e.max &&
+            anal.unit_id === e.unit
           ) {
             let variable_analdata = "";
             variable_analdata = e.analysis;
             await Promise.all(
               data.map(async (ev) => {
-                if (ev.fieldname == 0) {
+                if (ev.fieldname === 0) {
                   //Analysis Types
                   variable_analdata = e.analysis;
                   rowdata[ev.name] = e.analysis;
-                } else if (ev.fieldname == 1) {
+                } else if (ev.fieldname === 1) {
                   //value
                   rowdata[ev.name] = e.limitValue;
-                } else if (ev.fieldname == 2) {
+                } else if (ev.fieldname === 2) {
                   //author
                   let author = "";
                   await UserModel.findById(e.userid)
@@ -300,13 +300,13 @@ exports.gethistorydata = async function (req, res) {
                     })
                     .catch((err) => console.log(err));
                   rowdata[ev.name] = author;
-                } else if (ev.fieldname == 3) {
+                } else if (ev.fieldname === 3) {
                   //data
                   rowdata[ev.name] = moment(e.update_date).format(dateformat);
-                } else if (ev.fieldname == 4) {
+                } else if (ev.fieldname === 4) {
                   //reason
                   rowdata[ev.name] = e.reason ? e.reason : "";
-                } else if (ev.fieldname == 5) {
+                } else if (ev.fieldname === 5) {
                   //spec
                   let str = "";
                   await Promise.all(
@@ -336,14 +336,14 @@ exports.gethistorydata = async function (req, res) {
                     })
                   );
                   rowdata[ev.name] = str;
-                } else if (ev.fieldname == 6) {
+                } else if (ev.fieldname === 6) {
                   //comment
                   rowdata[ev.name] = e.comment ? e.comment : "";
-                } else if (ev.fieldname == 7) {
+                } else if (ev.fieldname === 7) {
                   rowdata[ev.name] = req.body.selectCertificate
                     ? req.body.selectCertificate
                     : "";
-                } else if (ev.fieldname == 8) {
+                } else if (ev.fieldname === 8) {
                   // AnalysisTypes-Objective
                   let str = "";
                   await Promise.all(
@@ -363,7 +363,7 @@ exports.gethistorydata = async function (req, res) {
                                   item.analysis === e.analysis
                                 ) {
                                   let unit = "";
-                                  if (v.unit == item.unit_id) {
+                                  if (v.unit === item.unit_id) {
                                     unit = item.unit;
                                   }
                                   str = `${e.analysis} - ${e.label} ${unit}`;
@@ -376,7 +376,7 @@ exports.gethistorydata = async function (req, res) {
                     })
                   );
                   rowdata[ev.name] = str;
-                } else if (ev.fieldname == 9) {
+                } else if (ev.fieldname === 9) {
                   let str = "";
                   let sub_str = [];
                   await Promise.all(
@@ -385,7 +385,7 @@ exports.gethistorydata = async function (req, res) {
                         .then((e) => {
                           if (e) {
                             str =
-                              variable_analdata == e.analysisType ? e.norm : "";
+                              variable_analdata === e.analysisType ? e.norm : "";
                             sub_str.push(str);
                           }
                         })

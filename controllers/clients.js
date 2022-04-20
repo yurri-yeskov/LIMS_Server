@@ -1,4 +1,7 @@
 const Client = require('../models/clients');
+const CertificateType = require('../models/certificateTypes')
+const InputLab = require('../models/inputLab')
+const mongoose = require('mongoose');
 const CSV = require('csv-string');
 
 exports.getAllClients = function (req, res) {
@@ -16,54 +19,52 @@ exports.createClient = async (req, res) => {
     res.status(400).json({ message: "Client name can not be empty!" });
     return;
   }
-  const defaultClient = await Client.find({ name: 'Default' })
-  if (defaultClient.length === 0) {
-    var defaultClientData = new Client({
-      name: 'Default',
-      clientId: 0,
-      other: '',
-      countryL: '',
-      zipCodeL: '',
-      cityL: '',
-      addressL: '',
-      address2L: '',
-      countryB: '',
-      zipCodeB: '',
-      cityB: '',
-      addressB: '',
-      address2B: '',
-      email: '',
-      email2: '',
-      email3: '',
-      remark1: '',
-      remark2: ''
-    });
-    await defaultClientData.save();
-  }
+  try {
+    const defaultClient = await Client.find({ name: 'Default' })
+    if (defaultClient.length === 0) {
+      var defaultClientData = new Client({
+        name: 'Default',
+        clientId: 0,
+        other: '',
+        countryB: '',
+        zipCodeB: '',
+        cityB: '',
+        addressB: '',
+        address2B: '',
+        address3B: '',
+        address_street: '',
+        email: '',
+        email2: '',
+        email3: '',
+        remark1: '',
+        remark2: ''
+      });
+      await defaultClientData.save();
+    }
 
-  var client = new Client({
-    name: req.body.name,
-    clientId: req.body.clientId,
-    other: req.body.other,
-    countryL: req.body.countryL,
-    zipCodeL: req.body.zipCodeL,
-    cityL: req.body.cityL,
-    addressL: req.body.addressL,
-    address2L: req.body.address2L,
-    countryB: req.body.countryB,
-    zipCodeB: req.body.zipCodeB,
-    cityB: req.body.cityB,
-    addressB: req.body.addressB,
-    address2B: req.body.address2B,
-    email: req.body.email,
-    email2: req.body.email2,
-    email3: req.body.email3,
-    remark1: req.body.remark1,
-    remark2: req.body.remark2
-  });
-  await client.save();
-  const clients = await Client.find()
-  return res.json(clients)
+    var client = new Client({
+      name: req.body.name,
+      clientId: req.body.clientId,
+      other: req.body.other,
+      countryB: req.body.countryB,
+      zipCodeB: req.body.zipCodeB,
+      cityB: req.body.cityB,
+      addressB: req.body.addressB,
+      address2B: req.body.address2B,
+      address3B: req.body.address3B,
+      address_street: req.body.address_street,
+      email: req.body.email,
+      email2: req.body.email2,
+      email3: req.body.email3,
+      remark1: req.body.remark1,
+      remark2: req.body.remark2
+    });
+    await client.save();
+    const clients = await Client.find()
+    return res.json(clients)
+  } catch (err) {
+    console.log(err.message);
+  }
 }
 
 exports.updateClient = function (req, res) {
@@ -78,16 +79,13 @@ exports.updateClient = function (req, res) {
     name: req.body.name,
     clientId: req.body.clientId,
     other: req.body.other,
-    countryL: req.body.countryL,
-    zipCodeL: req.body.zipCodeL,
-    cityL: req.body.cityL,
-    addressL: req.body.addressL,
-    address2L: req.body.address2L,
     countryB: req.body.countryB,
     zipCodeB: req.body.zipCodeB,
     cityB: req.body.cityB,
     addressB: req.body.addressB,
     address2B: req.body.address2B,
+    address3B: req.body.address3B,
+    address_street: req.body.address_street,
     email: req.body.email,
     email2: req.body.email2,
     email3: req.body.email3,
@@ -108,15 +106,27 @@ exports.updateClient = function (req, res) {
     });
 }
 
-exports.deleteClient = function (req, res) {
-  if (req.body === undefined || req.body.id === undefined || !req.body.id) {
-    res.status(400).json({ message: "Client id can not be empty!" });
-    return;
-  }
+exports.deleteClient = async function (req, res) {
+  try {
+    if (req.body === undefined || req.body.id === undefined || !req.body.id) {
+      res.status(400).json({ message: "Client id can not be empty!" });
+      return;
+    }
+    var id = req.body.id;
+    let result = await Material.aggregate([
+      { $unwind: '$clients' },
+      { $project: { clients: 1 } },
+      { $match: { clients: mongoose.Types.ObjectId(id) } }
+    ])
+    const _available1 = result.length === 0;
+    result = await CertificateType.find({ client: mongoose.Types.ObjectId(id) })
+    const _available2 = result.length === 0;
+    result = await InputLab.find({ client: mongoose.Types.ObjectId(id) })
+    const _available3 = result.length === 0;
 
-  var id = req.body.id;
+    if (!_available1 || !_available2 || !_available3) return res.status(400).json({ message: 'This client has been already used in material or certificate type' });
 
-  Client.findByIdAndRemove(id, { useFindAndModify: false }).then(data => {
+    const data = await Client.findByIdAndRemove(id, { useFindAndModify: false });
     if (!data)
       res.status(404).json({ message: `Cannot delete object with id = ${id}. Maybe object was not found!` });
     else {
@@ -124,10 +134,9 @@ exports.deleteClient = function (req, res) {
         res.json(data);
       })
     }
-  })
-    .catch(err => {
-      res.status(500).json({ message: "Could not delete object with id = " + id });
-    });
+  } catch (err) {
+    return res.status(500).json({ message: "Could not delete object with id = " + id });
+  }
 }
 
 exports.uploadClientCSV = async function (req, res) {
@@ -140,22 +149,22 @@ exports.uploadClientCSV = async function (req, res) {
       let update = {
         name: aCSV[0],
         other: aCSV[2],
-        countryL: aCSV[3],
-        zipCodeL: aCSV[4],
-        cityL: aCSV[5],
-        addressL: aCSV[6],
-        address2L: aCSV[7],
-        countryB: aCSV[8],
-        zipCodeB: aCSV[9],
-        cityB: aCSV[10],
-        addressB: aCSV[11],
-        address2B: aCSV[12],
-        email: aCSV[13],
-        email2: aCSV[14],
-        email3: aCSV[15],
-        remark1: aCSV[16],
-        remark2: aCSV[17]
+        countryB: aCSV[3],
+        zipCodeB: aCSV[4],
+        cityB: aCSV[5],
+        addressB: aCSV[6],
+        address2B: aCSV[7],
+        address3B: aCSV[8],
+        address_street: aCSV[9],
+        email: aCSV[10],
+        email2: aCSV[11],
+        email3: aCSV[12],
+        remark1: aCSV[13],
+        remark2: aCSV[14],
       };
+      if (parsedCSV[0].indexOf('Id') > -1) {
+        update._id = aCSV[15];
+      }
       let options = { upsert: true, new: true, setDefaultsOnInsert: true, useFindAndModify: false };
 
       await Client.findOneAndUpdate(query, update, options)

@@ -1,5 +1,9 @@
+const mongoose = require('mongoose');
 const User = require("../models/users");
 const UserType = require("../models/userTypes");
+const AnalysisInputHistory = require('../models/AnalysisInputHistory');
+const ChargeHistory = require('../models/ChargeHistory');
+const WeightHistory = require('../models/WeightHistory');
 const jwt = require("jsonwebtoken");
 const CSV = require("csv-string");
 const bcrypt = require('bcrypt')
@@ -12,7 +16,7 @@ exports.getToken = async function (req, res) {
   const now = Math.floor(Date.now() / 1000);
   if (header.exp <= now) return res.json("error math");
   let exit_user = User.findOne({ _id: header.id });
-  if (exit_user.length == 0) return res.json("error user not found");
+  if (exit_user.length === 0) return res.json("error user not found");
   return res.json(token);
 };
 
@@ -85,7 +89,7 @@ exports.loginUser = async function (req, res) {
       geologyAdmin: usertype_search.geologyAdmin,
       remark: usertype_search.remark,
     };
-    jwt.sign(payload, "secret", (err, token) => {
+    jwt.sign(payload, "secret", { expiresIn: 86400 }, (err, token) => {
       if (err) throw err;
       return res.json({
         success: true,
@@ -223,6 +227,15 @@ exports.deleteUser = async function (req, res) {
   let id = req.body.id;
 
   try {
+    let result = await AnalysisInputHistory.find({ user: mongoose.Types.ObjectId(id) })
+    const _deleteable1 = result.length === 0;
+    result = await ChargeHistory.find({ user: mongoose.Types.ObjectId(id) })
+    const _deleteable2 = result.length === 0;
+    result = await WeightHistory.find({ user: mongoose.Types.ObjectId(id) })
+    const _deleteable3 = result.length === 0;
+
+    if (!_deleteable1 || !_deleteable2 || !_deleteable3) return res.status(400).json({ message: 'This reason has been already used in Analysis Input History or Objective Input History' });
+
     const data = await User.findByIdAndRemove(id, { useFindAndModify: false });
     if (!data)
       res.status(404).send({
@@ -273,16 +286,21 @@ exports.uploadUserCSV = async function (req, res) {
     for (let i = 1; i < parsedCSV.length; i++) {
       let aCSV = parsedCSV[i];
       const userTypes = await UserType.findOne({ userType: aCSV[4] });
-      // console.log(userTypes);
-      if (userTypes._id != undefined) {
+      if (userTypes._id !== undefined) {
+        const salt = await bcrypt.genSalt(10)
+        const hash = await bcrypt.hash(aCSV[3], salt)
         let query = { user_id: aCSV[0] };
         let update = {
           userName: aCSV[1],
           email: aCSV[2],
-          password: aCSV[3],
+          password_text: aCSV[3],
+          password: hash,
           userType: userTypes._id,
-          remark: aCSV[5],
+          remark: aCSV[5]
         };
+        if (parsedCSV[0].indexOf('Id') > -1) {
+          update._id = aCSV[6];
+        }
         let options = {
           upsert: true,
           new: true,
@@ -292,9 +310,37 @@ exports.uploadUserCSV = async function (req, res) {
         await User.findOneAndUpdate(query, update, options);
       }
     }
-    const users = await User.find();
-    res.send({ users });
+    const users = await User.aggregate([
+      {
+        $lookup: {
+          from: 'usertypes',
+          localField: 'userType',
+          foreignField: '_id',
+          as: 'userType'
+        }
+      },
+      {
+        $unwind: '$userType'
+      },
+      {
+        $project: {
+          user_id: 1,
+          userName: 1,
+          email: 1,
+          password: 1,
+          password_text: 1,
+          user_type: '$userType.userType',
+          remark: 1,
+        }
+      }
+    ])
+    const userTypes = await UserType.find();
+    return res.json({
+      users: users,
+      userTypes: userTypes
+    })
   } catch (err) {
+    console.log(err)
     res.status(500).send({ message: err.message });
   }
 };

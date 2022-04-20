@@ -473,7 +473,7 @@ exports.certificate_mataterial = (req, res) => {
 exports.weight_material = (req, res) => {
   InputLaboratory.findById(req.body.selfid)
     .then((e2) => {
-      if (e2.Weight.length == 0) {
+      if (e2.Weight.length === 0) {
         let totalWeightValue = req.body.weight_value;
       } else {
         let totalWeightValue =

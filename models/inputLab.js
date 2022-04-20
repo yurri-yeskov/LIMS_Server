@@ -6,6 +6,10 @@ const inputLabSchema = new Schema({
         type: Date,
         default: Date.now()
     }],
+    client: {
+        type: mongoose.Types.ObjectId,
+        ref: 'clients'
+    },
     sample_type: {
         type: mongoose.Types.ObjectId,
         ref: 'sampleTypes'
@@ -14,7 +18,7 @@ const inputLabSchema = new Schema({
         type: mongoose.Types.ObjectId,
         ref: 'materials'
     },
-    client: {
+    material_category: {
         type: mongoose.Types.ObjectId,
         ref: 'clients'
     },

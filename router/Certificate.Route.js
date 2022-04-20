@@ -8,6 +8,15 @@ const router = express.Router()
 router.post('/', async (req, res) => {
 
     if (req.body.rowid === "") {
+        const upload_dir = path.join(__dirname, '../uploads');
+
+        if (!fs.existsSync(upload_dir)) {
+            fs.mkdir(upload_dir, (err) => {
+                if (err) {
+                    return console.error(err);
+                }
+            });
+        }
         const uploadPath = path.join(__dirname, `../uploads/certificates`);
         if (!fs.existsSync(uploadPath)) {
             fs.mkdir(uploadPath, (err) => {
@@ -38,7 +47,21 @@ router.post('/', async (req, res) => {
             logo_filename: logo_filename,
             footer_filename: footer_filename,
             logoUid: req.body.logoUid,
-            footerUid: req.body.footerUid
+            footerUid: req.body.footerUid,
+            header_styles: {
+                left: req.body.header_left,
+                top: req.body.header_top,
+                width: req.body.header_width,
+                height: req.body.header_height,
+                keep_distance: req.body.header_keep_distance,
+            },
+            footer_styles: {
+                left: req.body.footer_left,
+                bottom: req.body.footer_bottom,
+                width: req.body.footer_width,
+                height: req.body.footer_height,
+                keep_distance: req.body.footer_keep_distance
+            }
         }).save()
             .then((e) => res.json(e))
             .catch((err) => console.log(err));
@@ -111,6 +134,20 @@ router.post('/', async (req, res) => {
                 certData.date_format = req.body.date_format;
             }
             try {
+                certData.header_styles = {
+                    left: req.body.header_left,
+                    top: req.body.header_top,
+                    width: req.body.header_width,
+                    height: req.body.header_height,
+                    keep_distance: req.body.header_keep_distance,
+                }
+                certData.footer_styles = {
+                    left: req.body.footer_left,
+                    bottom: req.body.footer_bottom,
+                    width: req.body.footer_width,
+                    height: req.body.footer_height,
+                    keep_distance: req.body.footer_keep_distance
+                }
                 await certData.save()
                 return res.json(certData)
             } catch (err) {

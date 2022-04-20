@@ -22,6 +22,10 @@ const deliverySchema = new Schema({
         type: String,
         default: ''
     },
+    place: {
+        type: String,
+        default: ''
+    },
     street: {
         type: String,
         default: ''
@@ -43,6 +47,10 @@ const deliverySchema = new Schema({
         default: Date.now()
     },
     orderId: {
+        type: String,
+        default: ''
+    },
+    customer_orderId: {
         type: String,
         default: ''
     },

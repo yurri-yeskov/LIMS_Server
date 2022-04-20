@@ -1,3 +1,5 @@
+const mongoose = require('mongoose')
+const InputLab = require('../models/inputLab')
 const SampleType = require("../models/sampleTypes");
 const CSV = require("csv-string");
 
@@ -6,7 +8,7 @@ exports.getAllSampleTypes = async (req, res) => {
     const types = await SampleType.find()
     return res.json(types)
   } catch (err) {
-    return res.status(500).json({message: 'Fetch data failed'})
+    return res.status(500).json({ message: 'Fetch data failed' })
   }
 };
 
@@ -95,31 +97,27 @@ exports.updateSampleType = function (req, res) {
     });
 };
 
-exports.deleteSampleType = function (req, res) {
+exports.deleteSampleType = async function (req, res) {
   if (req.body === undefined || req.body.id === undefined || !req.body.id) {
     res.status(400).send({ message: "SampleType id can not be empty!" });
     return;
   }
 
   let id = req.body.id;
-
-  SampleType.findByIdAndRemove(id, { useFindAndModify: false })
-    .then((data) => {
-      if (!data)
-        res.status(404).send({
-          message: `Cannot delete object with id = ${id}. Maybe object was not found!`,
-        });
-      else {
-        SampleType.find().then((data) => {
-          res.send(data);
-        });
-      }
-    })
-    .catch((err) => {
-      res
-        .status(500)
-        .send({ message: "Could not delete object with id = " + id });
-    });
+  try {
+    const data = await SampleType.findByIdAndRemove(id, { useFindAndModify: false });
+    if (!data)
+      res.status(404).send({
+        message: `Cannot delete object with id = ${id}. Maybe object was not found!`,
+      });
+    else {
+      SampleType.find().then((data) => {
+        res.send(data);
+      });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: 'Server error' });
+  }
 };
 exports.uploadSampleTypeCSV = async function (req, res) {
   const parsedCSV = CSV.parse(req.body.data);
@@ -127,76 +125,24 @@ exports.uploadSampleTypeCSV = async function (req, res) {
     for (let i = 1; i < parsedCSV.length; i++) {
       let aCSV = parsedCSV[i];
       let query = { sampleType_id: aCSV[0] };
-      if (aCSV[2] === "") {
-        aCSV[2] = false;
-      } else if (aCSV[2] === "TRUE") {
-        aCSV[2] = true;
-      }
-      if (aCSV[3] === "") {
-        aCSV[3] = false;
-      } else if (aCSV[3] === "TRUE") {
-        aCSV[3] = true;
-      }
-      if (aCSV[4] === "") {
-        aCSV[4] = false;
-      } else if (aCSV[4] === "TRUE") {
-        aCSV[4] = true;
-      }
-      if (aCSV[5] === "") {
-        aCSV[5] = false;
-      } else if (aCSV[5] === "TRUE") {
-        aCSV[5] = true;
-      }
-      if (aCSV[6] === "") {
-        aCSV[6] = false;
-      } else if (aCSV[6] === "TRUE") {
-        aCSV[6] = true;
-      }
-      if (aCSV[7] === "") {
-        aCSV[7] = false;
-      } else if (aCSV[7] === "TRUE") {
-        aCSV[7] = true;
-      }
-      if (aCSV[8] === "") {
-        aCSV[8] = false;
-      } else if (aCSV[8] === "TRUE") {
-        aCSV[8] = true;
-      }
-      if (aCSV[9] === "") {
-        aCSV[9] = false;
-      } else if (aCSV[9] === "TRUE") {
-        aCSV[9] = true;
-      }
-      if (aCSV[10] === "") {
-        aCSV[10] = false;
-      } else if (aCSV[10] === "TRUE") {
-        aCSV[10] = true;
-      }
-      if (aCSV[11] === "") {
-        aCSV[11] = false;
-      } else if (aCSV[11] === "TRUE") {
-        aCSV[11] = true;
-      }
-      if (aCSV[12] === "") {
-        aCSV[12] = false;
-      } else if (aCSV[12] === "TRUE") {
-        aCSV[12] = true;
-      }
       let update = {
         sampleType: aCSV[1],
-        stockSample: aCSV[2],
-        material: aCSV[3],
-        client: aCSV[4],
-        packingType: aCSV[5],
-        dueDate: aCSV[6],
-        sampleDate: aCSV[7],
-        sendingDate: aCSV[8],
-        analysisType: aCSV[9],
-        incomingProduct: aCSV[10],
-        distributor: aCSV[11],
-        certificateType: aCSV[12],
+        material: String(aCSV[2]) === 'true' ? true : false,
+        client: String(aCSV[3]) === 'true' ? true : false,
+        packingType: String(aCSV[4]) === 'true' ? true : false,
+        stockSample: String(aCSV[5]) === 'true' ? true : false,
+        dueDate: String(aCSV[6]) === 'true' ? true : false,
+        sampleDate: String(aCSV[7]) === 'true' ? true : false,
+        sendingDate: String(aCSV[8]) === 'true' ? true : false,
+        analysisType: String(aCSV[9]) === 'true' ? true : false,
+        incomingProduct: String(aCSV[10]) === 'true' ? true : false,
+        distributor: String(aCSV[11]) === 'true' ? true : false,
+        certificateType: String(aCSV[12]) === 'true' ? true : false,
         remark: aCSV[13],
       };
+      if (parsedCSV[0].indexOf('Id') > -1) {
+        update._id = aCSV[14];
+      }
       let options = {
         upsert: true,
         new: true,
@@ -209,6 +155,17 @@ exports.uploadSampleTypeCSV = async function (req, res) {
       res.send(data);
     });
   } catch (err) {
+    console.log(err)
     res.status(500).send({ message: err.message });
   }
 };
+
+exports.checkSampleType = async (req, res) => {
+  try {
+    let id = req.body.id;
+    const result = await InputLab.find({ sample_type: mongoose.Types.ObjectId(id) })
+    return res.json({ changeable: result.length === 0 });
+  } catch (err) {
+    return res.status(500).json({ message: 'Server error' })
+  }
+}

@@ -1,7 +1,10 @@
+const mongoose = require('mongoose');
 const Material = require('../models/materials');
 const Objective = require('../models/objectives');
 const Unit = require('../models/units');
 const Client = require('../models/clients');
+const CertificateType = require('../models/certificateTypes')
+const InputLab = require('../models/inputLab')
 const AnalysisTypes = require('../models/analysisTypes');
 const CSV = require('csv-string');
 
@@ -211,19 +214,65 @@ exports.deleteMaterial = async function (req, res) {
   let id = req.body.id;
 
   try {
+
+    let result1 = await CertificateType.find({ material: id })
+    const _available1 = result1.length === 0;
+
+    let result2 = await InputLab.find({ material: mongoose.Types.ObjectId(id) })
+    const _available2 = result2.length === 0;
+    if (!_available1 || !_available2) return res.status(400).json({ message: 'This material has been already used in Certificate Type or Input/Laboratory' });
+
     const data = await Material.findByIdAndRemove(id, { useFindAndModify: false })
     if (!data)
       res.status(404).send({ message: `Cannot update object with id = ${id}. Maybe object was not found!` });
     else {
-      const materials = await Material.find();
-      const objectives = await Objective.find();
+      const materials = await Material.find().populate(['clients']);
+      const objectives = await Objective.find().populate('units');
       const analysisTypes = await AnalysisTypes.find();
       const units = await Unit.find();
-      const clients = await Client.find().select("_id, name");
+      const clients = await Client.find();
+      const obj_units = await Objective.aggregate([
+        {
+          $lookup: {
+            from: 'units',
+            localField: 'units',
+            foreignField: '_id',
+            as: 'unitsData'
+          }
+        },
+        { $unwind: '$unitsData' },
+        {
+          $project: {
+            _id: 1,
+            objective: 1,
+            unit: '$unitsData.unit',
+            unit_id: '$unitsData._id',
+          }
+        },
+        { $unwind: '$_id' },
+        { $unwind: '$objective' },
+        { $unwind: '$unit' },
+        { $unwind: '$unit_id' },
+        {
+          "$addFields": {
+            "obj_id": { "$toString": "$_id" },
+            "u_id": { "$toString": "$unit_id" }
+          }
+        },
+        { $unwind: '$obj_id' },
+        { $unwind: '$u_id' },
+        {
+          $project: {
+            label: { $concat: ['$objective', ' ', '$unit'] },
+            value: { $concat: ['$obj_id', '-', '$u_id'] },
+          }
+        }
+      ])
 
-      res.send({ materials, objectives, analysisTypes, units, clients });
+      res.send({ materials, objectives, analysisTypes, units, clients, obj_units });
     }
   } catch (err) {
+    console.log(err)
     res.status(500).send({ message: err.message });
   }
 }
@@ -233,6 +282,7 @@ exports.uploadMaterialCSV = async function (req, res) {
     res.status(400).send({ message: "Material CSV can not be empty!" });
     return;
   }
+  const defaultClient = await Client.findOne({ name: 'Default' })
   const parsedCSV = CSV.parse(req.body.data);
   try {
     for (let i = 1; i < parsedCSV.length; i++) {
@@ -251,18 +301,18 @@ exports.uploadMaterialCSV = async function (req, res) {
           continue;
         }
 
-        combiantions = combinations_group[i].split(', ');
-        for (let j = 0; j < combiantions.length - 1; j++) {
-          let comb_temp = combiantions[j].split('-');
+        combinations = combinations_group[i].split(', ');
+        for (let j = 0; j < combinations.length - 1; j++) {
+          let comb_temp = combinations[j].split('-');
           let split_content = comb_temp[1].split(' ');
           let analysis = await AnalysisTypes.findOne({ analysisType: comb_temp[0] });
           let obj = await Objective.findOne({ objective: split_content[0] });
           let unit_temp = await Unit.findOne({ unit: split_content[1].split(':')[0] });
           let min_val = split_content[2].replace(/[^\d\.]*/g, "");
           let max_val = comb_temp[2].replace(/[^\d\.]*/g, "");
-          let client_id = '';
+          let client_id = defaultClient._id;
           if (i === 0) {
-            client_id = '';
+            client_id = defaultClient._id;
           } else {
             client_id = client_id_list[i - 1];
           }
@@ -271,19 +321,69 @@ exports.uploadMaterialCSV = async function (req, res) {
         }
       }
 
+      let _material = aCSV[1].replace(/ /g, '_')
+      _material = _material.replace(/-/g, '_')
+      _material = _material.replace(/,/g, '')
+
       let query = { material_id: aCSV[0] };
       let update = {
-        material: aCSV[1],
+        material: _material,
         clients: client_id_list,
         aTypesValues: aTypesValuesList,
         objectiveValues: objectiveValuesList,
-        remark: aCSV[4]
+        remark: aCSV[4],
       };
+      if (parsedCSV[0].indexOf('Id') > -1) {
+        update._id = aCSV[5];
+      }
       let options = { upsert: true, new: true, setDefaultsOnInsert: true, useFindAndModify: false };
       await Material.findOneAndUpdate(query, update, options)
     }
     const materials = await Material.find().populate(['clients']);
-    res.send({ materials });
+    const objectives = await Objective.find().populate('units');
+    const analysisTypes = await AnalysisTypes.find();
+    const units = await Unit.find();
+    const clients = await Client.find();
+
+    const obj_units = await Objective.aggregate([
+      {
+        $lookup: {
+          from: 'units',
+          localField: 'units',
+          foreignField: '_id',
+          as: 'unitsData'
+        }
+      },
+      { $unwind: '$unitsData' },
+      {
+        $project: {
+          _id: 1,
+          objective: 1,
+          unit: '$unitsData.unit',
+          unit_id: '$unitsData._id',
+        }
+      },
+      { $unwind: '$_id' },
+      { $unwind: '$objective' },
+      { $unwind: '$unit' },
+      { $unwind: '$unit_id' },
+      {
+        "$addFields": {
+          "obj_id": { "$toString": "$_id" },
+          "u_id": { "$toString": "$unit_id" }
+        }
+      },
+      { $unwind: '$obj_id' },
+      { $unwind: '$u_id' },
+      {
+        $project: {
+          label: { $concat: ['$objective', ' ', '$unit'] },
+          value: { $concat: ['$obj_id', '-', '$u_id'] },
+        }
+      }
+    ])
+
+    res.send({ materials, objectives, analysisTypes, units, clients, obj_units });
   }
   catch (err) {
     res.status(500).send({ message: err.message });

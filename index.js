@@ -11,6 +11,8 @@ const router = require("./router");
 const config = require("./config.js");
 const User = require("./models/users");
 const UserType = require("./models/userTypes");
+const Client = require('./models/clients')
+const Language = require('./models/language')
 
 const UserRoute = require('./router/User.Route')
 const MaterialRoute = require('./router/Material.Route')
@@ -20,6 +22,8 @@ const ChargeRoute = require('./router/Charge.Route')
 const AnalysisRoute = require('./router/Analysis.Route')
 const ClientRoute = require('./router/Client.Route')
 const CertificateRoute = require('./router/Certificate.Route')
+
+const languageData = require('./language.json')
 
 const express = require("express");
 
@@ -101,6 +105,52 @@ const userFind = async () => {
 
 // userTypeFind();
 userFind();
+
+const addDefaultClient = async () => {
+  const defaultClient = await Client.find({ name: 'Default' })
+  if (defaultClient.length === 0) {
+    var defaultClientData = new Client({
+      name: 'Default',
+      clientId: 0,
+      other: '',
+      countryL: '',
+      zipCodeL: '',
+      cityL: '',
+      addressL: '',
+      address2L: '',
+      countryB: '',
+      zipCodeB: '',
+      cityB: '',
+      addressB: '',
+      address2B: '',
+      email: '',
+      email2: '',
+      email3: '',
+      remark1: '',
+      remark2: ''
+    });
+    await defaultClientData.save();
+  }
+}
+
+addDefaultClient();
+
+const addLanguage = async () => {
+  const languages = await Language.find()
+  if (languages.length === 0) {
+    for (let i = 0; i < languageData.length; i++) {
+      const language = new Language({
+        _id: languageData[i]._id,
+        English: languageData[i].English,
+        German: languageData[i].German,
+        label: languageData[i].label
+      })
+      await language.save()
+    }
+  }
+}
+
+addLanguage()
 
 function onError(error) {
   if (error.syscall != "listen") {

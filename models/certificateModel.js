@@ -34,6 +34,50 @@ let Reason = new Schema(
     footer_filename: {
       type: String,
       default: ''
+    },
+    header_styles: {
+      left: {
+        type: Number,
+        default: 0
+      },
+      top: {
+        type: Number,
+        default: 0
+      },
+      width: {
+        type: Number,
+        default: 0
+      },
+      height: {
+        type: Number,
+        default: 0
+      },
+      keep_distance: {
+        type: Boolean,
+        default: false
+      }
+    },
+    footer_styles: {
+      left: {
+        type: Number,
+        default: 0
+      },
+      bottom: {
+        type: Number,
+        default: 0
+      },
+      width: {
+        type: Number,
+        default: 0
+      },
+      height: {
+        type: Number,
+        default: 0
+      },
+      keep_distance: {
+        type: Boolean,
+        default: false
+      }
     }
   },
   { collection: "certificates" }

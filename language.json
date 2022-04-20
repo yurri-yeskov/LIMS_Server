@@ -1,0 +1,426 @@
+[{
+  "_id": "616562737c69584c3a01499d",
+  "English": "Administration",
+  "German": "Administration",
+  "label": "administration"
+},{
+  "_id": "616562e07c69584c3a01499f",
+  "English": "Settings",
+  "German": "Einstellungen",
+  "label": "setting"
+},{
+  "_id": "616563167c69584c3a0149a4",
+  "English": "Login",
+  "German": "Login",
+  "label": "login"
+},{
+  "_id": "616563307c69584c3a0149a5",
+  "English": "Help",
+  "German": "Hilfe",
+  "label": "help"
+},{
+  "_id": "616594467c69584c3a0149a6",
+  "English": "Input",
+  "German": "Eingabe",
+  "label": "input"
+},{
+  "_id": "616594a27c69584c3a0149a7",
+  "English": "Laboratory",
+  "German": "Labor",
+  "label": "laboratory"
+},{
+  "_id": "616594d57c69584c3a0149a8",
+  "English": "Analysis",
+  "German": "Analyse",
+  "label": "analysis"
+},{
+  "_id": "616595337c69584c3a0149a9",
+  "English": "Stock Management",
+  "German": "Lager Verwaltung",
+  "label": "stock_management"
+},{
+  "_id": "616595917c69584c3a0149aa",
+  "English": "Spare Parts",
+  "German": "Ersatzteile",
+  "label": "spare_parts"
+},{
+  "_id": "616595dc7c69584c3a0149ab",
+  "English": "Import/Export",
+  "German": "Import/Export",
+  "label": "import_export"
+},{
+  "_id": "6165960c7c69584c3a0149ac",
+  "English": "HS",
+  "German": "HS",
+  "label": "hs"
+},{
+  "_id": "616596507c69584c3a0149ad",
+  "English": "Geo-Information System",
+  "German": "Geo-Informations System",
+  "label": "geo_info_system"
+},{
+  "_id": "616596a87c69584c3a0149ae",
+  "English": "Reports",
+  "German": "Berichte",
+  "label": "reports"
+},{
+  "_id": "616596d47c69584c3a0149af",
+  "English": "Excel",
+  "German": "Excel",
+  "label": "excel"
+},{
+  "_id": "6165971c7c69584c3a0149b0",
+  "English": "Home",
+  "German": "Home",
+  "label": "home"
+},{
+  "_id": "6165a2887c69584c3a0149b1",
+  "English": "Import",
+  "German": "Import",
+  "label": "import"
+},{
+  "_id": "6165a2c07c69584c3a0149b2",
+  "English": "Export",
+  "German": "Export",
+  "label": "export"
+},{
+  "_id": "6165cbf07c69584c3a0149b3",
+  "English": "User",
+  "German": "Benutzer",
+  "label": "user"
+},{
+  "_id": "6165cc377c69584c3a0149b4",
+  "English": "User Types",
+  "German": "Benutzer-Typen",
+  "label": "user_types"
+},{
+  "_id": "6165cc5d7c69584c3a0149b5",
+  "English": "Sample Types",
+  "German": "Probe-Arten",
+  "label": "sample_types"
+},{
+  "_id": "6165cc8b7c69584c3a0149b6",
+  "English": "Material",
+  "German": "Material",
+  "label": "material"
+},{
+  "_id": "6165ccbf7c69584c3a0149b7",
+  "English": "Analysis Types",
+  "German": "Analyse Typen",
+  "label": "analysis_types"
+},{
+  "_id": "6165cce97c69584c3a0149b8",
+  "English": "Objectives",
+  "German": "Spaltenbezeichnungen",
+  "label": "objectives"
+},{
+  "_id": "6165cd2f7c69584c3a0149b9",
+  "English": "Packing Types",
+  "German": "Verpackungstypen",
+  "label": "packing_types"
+},{
+  "_id": "6165cd687c69584c3a0149ba",
+  "English": "Certificate Types",
+  "German": "Zertifikate",
+  "label": "certificate_types"
+},{
+  "_id": "6165cde97c69584c3a0149bb",
+  "English": "Unit Types",
+  "German": "Einheiten",
+  "label": "unit_types"
+},{
+  "_id": "6165ce0f7c69584c3a0149bc",
+  "English": "Clients",
+  "German": "Kunden",
+  "label": "clients"
+},{
+  "_id": "6165ce247c69584c3a0149bd",
+  "English": "Reason",
+  "German": "Begründung",
+  "label": "reason"
+},{
+  "_id": "6165ce467c69584c3a0149be",
+  "English": "Certificate Template",
+  "German": "Zertifikat Vorlage",
+  "label": "certificate_template"
+},{
+  "_id": "6165dfab7c69584c3a0149bf",
+  "English": "User ID",
+  "German": "Benutzer ID",
+  "label": "user_id"
+},{
+  "_id": "6165dfcf7c69584c3a0149c0",
+  "English": "User Name",
+  "German": "Benutzer Name",
+  "label": "user_name"
+},{
+  "_id": "6165dff27c69584c3a0149c1",
+  "English": "Email",
+  "German": "Email",
+  "label": "email"
+},{
+  "_id": "6165e0157c69584c3a0149c2",
+  "English": "Password",
+  "German": "Passwort",
+  "label": "password"
+},{
+  "_id": "6165e0417c69584c3a0149c3",
+  "English": "User Type",
+  "German": "Benutzer Typ",
+  "label": "user_type"
+},{
+  "_id": "6165e0917c69584c3a0149c4",
+  "English": "Remark",
+  "German": "Anmerkung",
+  "label": "remark"
+},{
+  "_id": "6165e0d57c69584c3a0149c5",
+  "English": "Create New",
+  "German": "Neu",
+  "label": "create_new"
+},{
+  "_id": "6165eaac7c69584c3a0149c6",
+  "English": "User Type ID",
+  "German": "Benutzertyp ID",
+  "label": "user_type_id"
+},{
+  "_id": "6165eaf67c69584c3a0149c7",
+  "English": "Admin",
+  "German": "Admin",
+  "label": "admin"
+},{
+  "_id": "6165eb3b7c69584c3a0149c8",
+  "English": "Geology",
+  "German": "Geologie",
+  "label": "geology"
+},{
+  "_id": "6165ecee7c69584c3a0149c9",
+  "English": "Stock",
+  "German": "Lager",
+  "label": "stock"
+},{
+  "_id": "61665f117c69584c3a0149ca",
+  "English": "Sample Type ID",
+  "German": "Probentyp ID",
+  "label": "sample_type_id"
+},{
+  "_id": "61665f237c69584c3a0149cb",
+  "English": "Sample Type",
+  "German": "Probentyp Typ",
+  "label": "sample_type"
+},{
+  "_id": "61665f567c69584c3a0149cc",
+  "English": "Client",
+  "German": "Kunde",
+  "label": "client"
+},{
+  "_id": "61665f837c69584c3a0149cd",
+  "English": "Packing Type",
+  "German": "Verpackungsart",
+  "label": "packing_type"
+},{
+  "_id": "61665fe07c69584c3a0149ce",
+  "English": "Due Date",
+  "German": "Fälligkeitsdatum",
+  "label": "due_date"
+},{
+  "_id": "616660267c69584c3a0149cf",
+  "English": "Sample Date",
+  "German": "Probendatum",
+  "label": "sample_date"
+},{
+  "_id": "6166604d7c69584c3a0149d0",
+  "English": "Sending Date",
+  "German": "Versanddatum",
+  "label": "sending_date"
+},{
+  "_id": "6166607d7c69584c3a0149d1",
+  "English": "Analysis Type",
+  "German": "Analyse Typ",
+  "label": "analysis_type"
+},{
+  "_id": "616661197c69584c3a0149d2",
+  "English": "Incoming Product",
+  "German": "Eingehendes Produkt",
+  "label": "incoming_product"
+},{
+  "_id": "6166614d7c69584c3a0149d3",
+  "English": "Distributor",
+  "German": "Verteiler",
+  "label": "distributor"
+},{
+  "_id": "616661767c69584c3a0149d4",
+  "English": "Certificate Type",
+  "German": "Zertifikat Typ",
+  "label": "certificate_type"
+},{
+  "_id": "616667a07c69584c3a0149d5",
+  "English": "Material ID",
+  "German": "Material ID",
+  "label": "material_id"
+},{
+  "_id": "616668297c69584c3a0149d6",
+  "English": "AnalysisType-Objectives",
+  "German": "AnalyseTyp-Zielsetzungen",
+  "label": "analysistype_objectives"
+},{
+  "_id": "61666f527c69584c3a0149d7",
+  "English": "Analysis Type ID",
+  "German": "Analyse Typ ID",
+  "label": "analysistype_id"
+},{
+  "_id": "61666f837c69584c3a0149d8",
+  "English": "Norm",
+  "German": "Norm",
+  "label": "norm"
+},{
+  "_id": "616672797c69584c3a0149d9",
+  "English": "Objective ID",
+  "German": "Zielsetzung ID",
+  "label": "objective_id"
+},{
+  "_id": "616672b37c69584c3a0149da",
+  "English": "Objective",
+  "German": "Zielsetzung",
+  "label": "objective"
+},{
+  "_id": "616673dc7c69584c3a0149db",
+  "English": "Units",
+  "German": "Einheiten",
+  "label": "units"
+},{
+  "_id": "616674127c69584c3a0149dc",
+  "English": "Packing Type ID",
+  "German": "Verpackungstyp ID",
+  "label": "packing_type_id"
+},{
+  "_id": "6166742d7c69584c3a0149dd",
+  "English": "Packing Type",
+  "German": "Verpackungstyp",
+  "label": "packing_type"
+},{
+  "_id": "616674b97c69584c3a0149df",
+  "English": "Certificate Type ID",
+  "German": "Zertifikat Typ ID",
+  "label": "certificate_type_id"
+},{
+  "_id": "61667da07c69584c3a0149e0",
+  "English": "Unit",
+  "German": "Einheit",
+  "label": "unit"
+},{
+  "_id": "61667dad7c69584c3a0149e1",
+  "English": "Unit ID",
+  "German": "Einheit ID",
+  "label": "unit_id"
+},{
+  "_id": "6166a17aef969f5657d21b7c",
+  "English": "Zip Code",
+  "German": "Postleitzahl",
+  "label": "zip_code"
+},{
+  "_id": "6166a19aef969f5657d21b7d",
+  "English": "Name",
+  "German": "Name",
+  "label": "name"
+},{
+  "_id": "6166a368ef969f5657d21b7e",
+  "English": "Client ID",
+  "German": "Kundennummer",
+  "label": "client_id"
+},{
+  "_id": "6166a3afef969f5657d21b7f",
+  "English": "Other",
+  "German": "Sonstiges",
+  "label": "other"
+},{
+  "_id": "6166a3e9ef969f5657d21b80",
+  "English": "Country",
+  "German": "Land",
+  "label": "country"
+},{
+  "_id": "6166a420ef969f5657d21b81",
+  "English": "City",
+  "German": "Stadt",
+  "label": "city"
+},{
+  "_id": "6166a44fef969f5657d21b82",
+  "English": "Address",
+  "German": "Adresse",
+  "label": "address"
+},{
+  "_id": "6166a4d1ef969f5657d21b83",
+  "English": "Reason ID",
+  "German": "Ursache ID",
+  "label": "reason_id"
+},{
+  "_id": "6166a514ef969f5657d21b84",
+  "English": "Certificate Title",
+  "German": "Zertifikatstitel",
+  "label": "certificate_title"
+},{
+  "_id": "6166a53fef969f5657d21b85",
+  "English": "Company",
+  "German": "Firma",
+  "label": "company"
+},{
+  "_id": "6166a554ef969f5657d21b86",
+  "English": "Logo",
+  "German": "Logo",
+  "label": "logo"
+},{
+  "_id": "6166a56aef969f5657d21b87",
+  "English": "Place",
+  "German": "Ort",
+  "label": "place"
+},{
+  "_id": "6166a58eef969f5657d21b88",
+  "English": "Date Format",
+  "German": "Datumsformat",
+  "label": "date_format"
+},{
+  "_id": "6166a5bcef969f5657d21b89",
+  "English": "Product Data",
+  "German": "Produktdaten",
+  "label": "product_data"
+},{
+  "_id": "6166a5ecef969f5657d21b8a",
+  "English": "Table Columns",
+  "German": "Tabellenspalten",
+  "label": "table_columns"
+},{
+  "_id": "6166a60bef969f5657d21b8b",
+  "English": "Free Text",
+  "German": "Freier Text",
+  "label": "free_text"
+},{
+  "_id": "6166a621ef969f5657d21b8c",
+  "English": "Footer",
+  "German": "Fußzeile",
+  "label": "footer"
+},{
+  "_id": "6166ca08ef969f5657d21b8d",
+  "English": "Certificate",
+  "German": "Zertifikat",
+  "label": "certificate"
+},{
+  "_id": "6166ca4def969f5657d21b8e",
+  "English": "Weight(actual)",
+  "German": "Gewicht(tatsächlich)",
+  "label": "weight_actual"
+},{
+  "_id": "6166ca8fef969f5657d21b8f",
+  "English": "Lot Number",
+  "German": "Lot Number",
+  "label": "charge"
+},{
+  "_id": "6166ca8fef969f5657d21b90",
+  "English": "Material Left",
+  "German": "Material Left",
+  "label": "material_left"
+},{
+  "_id": "6166ca8fef969f5657d21b91",
+  "English": "Stock Sample",
+  "German": "Stock Sample",
+  "label": "stock_sample"
+}]

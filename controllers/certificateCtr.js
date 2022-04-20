@@ -199,14 +199,13 @@ exports.Uptabledata = function (req, res) {
 
 exports.uploadFile = async (req, res) => {
   const parsedCSV = CSV.parse(req.body.data);
-
   try {
     for (let i = 1; i < parsedCSV.length; i++) {
       let pData = parsedCSV[i][7].split("\n").map(data => {
         return {
-          name: data.split(" ")[0],
-          pagename: parseInt(data.split(" ")[1]),
-          fieldname: data.split(" ")[2]
+          name: data.split("@@@")[0],
+          pagename: parseInt(data.split("@@@")[1]),
+          fieldname: data.split("@@@")[2]
         }
       })
       for (let i = 0; i < 10 - pData.length; i++) {
@@ -218,8 +217,8 @@ exports.uploadFile = async (req, res) => {
       }
       let columnData = parsedCSV[i][8].split("\n").map(data => {
         return {
-          name: data.split(" ")[0],
-          fieldname: data.split(' ')[1]
+          name: data.split("@@@")[0],
+          fieldname: data.split('@@@')[1]
         }
       })
       for (let i = 0; i < 10 - columnData.length; i++) {
@@ -247,6 +246,7 @@ exports.uploadFile = async (req, res) => {
           date_format: parsedCSV[i][5],
           logoUid: parsedCSV[i][11],
           footerUid: parsedCSV[i][12],
+          _id: parsedCSV[i][13]
         };
         let options = { upsert: true, new: true, setDefaultsOnInsert: true, useFindAndModify: false };
 

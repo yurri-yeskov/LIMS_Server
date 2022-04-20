@@ -9,7 +9,6 @@ let certificateType = new Schema(
     client: { type: mongoose.Types.ObjectId, ref: 'clients' },
     certificateType: { type: String },
     analysises: { type: Array },
-    packing: { type: String },
     remark: { type: String }
   },
   { collection: "certificateTypes" }
